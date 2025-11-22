@@ -1,0 +1,56 @@
+package com.pasteleriamilsabores.backend.service;
+
+import com.pasteleriamilsabores.backend.dto.AuthResponse;
+import com.pasteleriamilsabores.backend.dto.LoginRequest;
+import com.pasteleriamilsabores.backend.dto.RegisterRequest;
+import com.pasteleriamilsabores.backend.exception.BadRequestException;
+import com.pasteleriamilsabores.backend.model.Usuario;
+import com.pasteleriamilsabores.backend.repository.UsuarioRepository;
+import com.pasteleriamilsabores.backend.security.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+@Service
+public class AuthService {
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    public AuthResponse login(LoginRequest request) {
+        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new BadRequestException("Credenciales inválidas"));
+
+        if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
+            throw new BadRequestException("Credenciales inválidas");
+        }
+
+        String token = jwtUtil.generarToken(usuario.getEmail(), usuario.getRol());
+
+        return new AuthResponse(token, usuario.getId(), usuario.getNombre(), usuario.getEmail(), usuario.getRol());
+    }
+
+    public AuthResponse register(RegisterRequest request) {
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
+            throw new BadRequestException("El email ya está registrado");
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNombre(request.getNombre());
+        usuario.setEmail(request.getEmail());
+        usuario.setPassword(passwordEncoder.encode(request.getPassword()));
+        usuario.setRol("ROLE_CLIENTE");
+
+        Usuario guardado = usuarioRepository.save(usuario);
+
+        String token = jwtUtil.generarToken(guardado.getEmail(), guardado.getRol());
+
+        return new AuthResponse(token, guardado.getId(), guardado.getNombre(), guardado.getEmail(), guardado.getRol());
+    }
+}
