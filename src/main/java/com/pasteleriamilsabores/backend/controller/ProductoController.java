@@ -2,20 +2,23 @@ package com.pasteleriamilsabores.backend.controller;
 
 import com.pasteleriamilsabores.backend.dto.ProductoDTO;
 import com.pasteleriamilsabores.backend.service.ProductoService;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/productos")
 @CrossOrigin(origins = "http://localhost:5173")
+@RequiredArgsConstructor
 public class ProductoController {
 
-    @Autowired
-    private ProductoService productoService;
+    private final ProductoService productoService;
 
     @GetMapping
     public ResponseEntity<List<ProductoDTO>> listarTodos() {
@@ -28,29 +31,31 @@ public class ProductoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductoDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<ProductoDTO> obtenerPorId(@PathVariable long id) {
         return ResponseEntity.ok(productoService.buscarPorId(id));
     }
 
     @GetMapping("/categoria/{categoriaId}")
-    public ResponseEntity<List<ProductoDTO>> listarPorCategoria(@PathVariable Long categoriaId) {
+    public ResponseEntity<List<ProductoDTO>> listarPorCategoria(@PathVariable long categoriaId) {
         return ResponseEntity.ok(productoService.listarPorCategoria(categoriaId));
     }
 
     @PostMapping
     public ResponseEntity<ProductoDTO> crear(@RequestBody ProductoDTO productoDTO) {
         ProductoDTO creado = productoService.crearProducto(productoDTO);
-        return ResponseEntity.created(URI.create("/api/productos/" + creado.getId())).body(creado);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+                .buildAndExpand(creado.getId()).toUri();
+        return ResponseEntity.created(location).body(creado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductoDTO> actualizar(@PathVariable Long id, @RequestBody ProductoDTO productoDTO) {
+    public ResponseEntity<ProductoDTO> actualizar(@PathVariable long id, @RequestBody ProductoDTO productoDTO) {
         ProductoDTO actualizado = productoService.actualizarProducto(id, productoDTO);
         return ResponseEntity.ok(actualizado);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable long id) {
         productoService.eliminarProducto(id);
         return ResponseEntity.noContent().build();
     }

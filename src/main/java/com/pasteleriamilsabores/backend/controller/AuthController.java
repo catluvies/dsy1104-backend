@@ -5,17 +5,19 @@ import com.pasteleriamilsabores.backend.dto.LoginRequest;
 import com.pasteleriamilsabores.backend.dto.RegisterRequest;
 import com.pasteleriamilsabores.backend.service.AuthService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:5173")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {

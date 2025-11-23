@@ -17,7 +17,7 @@ public class JwtUtil {
     private String secret;
 
     @Value("${jwt.expiration}")
-    private Long expiration;
+    private long expiration;
 
     private SecretKey getSigningKey() {
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
