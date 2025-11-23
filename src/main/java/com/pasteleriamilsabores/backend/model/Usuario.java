@@ -34,6 +34,18 @@ public class Usuario {
     @Column(nullable = false, length = 20)
     private String rol;
 
+    @Column(nullable = false, length = 12)
+    private String rut;
+
+    @Column(length = 15)
+    private String telefono;
+
+    @Column(length = 255)
+    private String direccion;
+
+    @Column(length = 100)
+    private String comuna;
+
     @CreationTimestamp
     @Column(name = "fecha_creacion", updatable = false)
     private LocalDateTime fechaCreacion;

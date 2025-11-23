@@ -46,6 +46,10 @@ public class AuthService {
         usuario.setEmail(request.getEmail());
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
         usuario.setRol("ROLE_CLIENTE");
+        usuario.setRut(request.getRut());
+        usuario.setTelefono(request.getTelefono());
+        usuario.setDireccion(request.getDireccion());
+        usuario.setComuna(request.getComuna());
 
         Usuario guardado = usuarioRepository.save(usuario);
 

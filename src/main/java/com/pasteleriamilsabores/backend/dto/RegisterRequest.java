@@ -19,4 +19,13 @@ public class RegisterRequest {
     @NotBlank(message = "La contraseña es obligatoria")
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
     private String password;
+
+    @NotBlank(message = "El RUT es obligatorio")
+    private String rut;
+
+    private String telefono;
+
+    private String direccion;
+
+    private String comuna;
 }

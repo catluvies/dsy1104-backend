@@ -27,7 +27,7 @@ public class Producto {
     private String descripcion;
 
     @Column(length = 255)
-    private String imagen;
+    private String imagenUrl;
 
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)

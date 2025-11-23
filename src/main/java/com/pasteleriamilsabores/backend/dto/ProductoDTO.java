@@ -12,7 +12,7 @@ public class ProductoDTO {
     private Long id;
     private String nombre;
     private String descripcion;
-    private String imagen;
+    private String imagenUrl;
     private Long categoriaId;
     private String categoriaNombre;
     private String tamaños;

@@ -40,7 +40,6 @@ public class CategoriaService {
         Categoria categoria = new Categoria();
         categoria.setNombre(categoriaDTO.getNombre());
         categoria.setDescripcion(categoriaDTO.getDescripcion());
-        categoria.setImagen(categoriaDTO.getImagen());
         categoria.setActiva(true);
 
         Categoria guardada = categoriaRepository.save(categoria);
@@ -53,7 +52,6 @@ public class CategoriaService {
 
         categoria.setNombre(categoriaDTO.getNombre());
         categoria.setDescripcion(categoriaDTO.getDescripcion());
-        categoria.setImagen(categoriaDTO.getImagen());
         categoria.setActiva(categoriaDTO.getActiva());
 
         Categoria actualizada = categoriaRepository.save(categoria);
@@ -72,7 +70,6 @@ public class CategoriaService {
                 categoria.getId(),
                 categoria.getNombre(),
                 categoria.getDescripcion(),
-                categoria.getImagen(),
                 categoria.getActiva());
     }
 }

@@ -57,7 +57,7 @@ public class ProductoService {
         Producto producto = new Producto();
         producto.setNombre(productoDTO.getNombre());
         producto.setDescripcion(productoDTO.getDescripcion());
-        producto.setImagen(productoDTO.getImagen());
+        producto.setImagenUrl(productoDTO.getImagenUrl());
         producto.setCategoria(categoria);
         producto.setTamaños(productoDTO.getTamaños());
         producto.setNotas(productoDTO.getNotas());
@@ -80,7 +80,7 @@ public class ProductoService {
 
         producto.setNombre(productoDTO.getNombre());
         producto.setDescripcion(productoDTO.getDescripcion());
-        producto.setImagen(productoDTO.getImagen());
+        producto.setImagenUrl(productoDTO.getImagenUrl());
         producto.setCategoria(categoria);
         producto.setTamaños(productoDTO.getTamaños());
         producto.setNotas(productoDTO.getNotas());
@@ -102,7 +102,7 @@ public class ProductoService {
                 producto.getId(),
                 producto.getNombre(),
                 producto.getDescripcion(),
-                producto.getImagen(),
+                producto.getImagenUrl(),
                 producto.getCategoria().getId(),
                 producto.getCategoria().getNombre(),
                 producto.getTamaños(),
