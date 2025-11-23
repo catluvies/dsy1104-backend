@@ -4,8 +4,11 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,9 +36,24 @@ public class Boleta {
     @Column(nullable = false)
     private Double total;
 
+    @Column(columnDefinition = "TEXT")
+    private String direccionEntrega;
+
+    private Double subtotal;
+
+    private Double costoEnvio;
+
+    private String metodoPago;
+
+    @Column(columnDefinition = "TEXT")
+    private String notasAdicionales;
+
     @Column(length = 50, nullable = false)
     private String estado;
 
     @OneToMany(mappedBy = "boleta", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<DetalleBoleta> detalles;
 }

@@ -1,6 +1,7 @@
 package com.pasteleriamilsabores.backend.service;
 
 import com.pasteleriamilsabores.backend.dto.*;
+import com.pasteleriamilsabores.backend.exception.BadRequestException;
 import com.pasteleriamilsabores.backend.exception.ResourceNotFoundException;
 import com.pasteleriamilsabores.backend.model.Boleta;
 import com.pasteleriamilsabores.backend.model.DetalleBoleta;
@@ -55,8 +56,12 @@ public class BoletaService {
         Boleta boleta = new Boleta();
         boleta.setUsuario(usuario);
         boleta.setEstado("PENDIENTE");
+        boleta.setDireccionEntrega(request.getDireccionEntrega());
+        boleta.setMetodoPago(request.getMetodoPago());
+        boleta.setNotasAdicionales(request.getNotasAdicionales());
+        boleta.setCostoEnvio(request.getCostoEnvio() != null ? request.getCostoEnvio() : 0.0);
 
-        double total = 0.0;
+        double subtotal = 0.0;
         List<DetalleBoleta> detalles = new ArrayList<>();
 
         for (DetalleBoletaRequest detalleRequest : request.getDetalles()) {
@@ -68,19 +73,28 @@ public class BoletaService {
             Producto producto = productoRepository.findById(productoId)
                     .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
+            if (producto.getStock() < detalleRequest.getCantidad()) {
+                throw new BadRequestException("Stock insuficiente para el producto: " + producto.getNombre());
+            }
+
+            // Descontar stock
+            producto.setStock(producto.getStock() - detalleRequest.getCantidad());
+            productoRepository.save(producto);
+
             DetalleBoleta detalle = new DetalleBoleta();
             detalle.setBoleta(boleta);
             detalle.setProducto(producto);
             detalle.setCantidad(detalleRequest.getCantidad());
-            detalle.setPrecioUnitario(detalleRequest.getPrecioUnitario());
-            detalle.setSubtotal(detalleRequest.getCantidad() * detalleRequest.getPrecioUnitario());
+            detalle.setPrecioUnitario(producto.getPrecio()); // Usar precio actual del producto
+            detalle.setSubtotal(detalleRequest.getCantidad() * producto.getPrecio());
             detalle.setTamaño(detalleRequest.getTamaño());
 
-            total += detalle.getSubtotal();
+            subtotal += detalle.getSubtotal();
             detalles.add(detalle);
         }
 
-        boleta.setTotal(total);
+        boleta.setSubtotal(subtotal);
+        boleta.setTotal(subtotal + boleta.getCostoEnvio());
         boleta.setDetalles(detalles);
 
         Boleta guardada = boletaRepository.save(boleta);
@@ -118,9 +132,14 @@ public class BoletaService {
         return new BoletaDTO(
                 boleta.getId(),
                 boleta.getUsuario().getId(),
-                boleta.getUsuario().getNombre(),
+                boleta.getUsuario().getNombre() + " " + boleta.getUsuario().getApellido(),
                 boleta.getFecha(),
                 boleta.getTotal(),
+                boleta.getSubtotal(),
+                boleta.getCostoEnvio(),
+                boleta.getMetodoPago(),
+                boleta.getDireccionEntrega(),
+                boleta.getNotasAdicionales(),
                 boleta.getEstado(),
                 detallesDTO);
     }

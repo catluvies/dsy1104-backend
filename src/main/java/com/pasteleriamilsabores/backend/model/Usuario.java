@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,8 +23,14 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 50)
     private String nombre;
+
+    @Column(nullable = false, length = 50)
+    private String apellido;
+
+    @Column(name = "ultima_conexion")
+    private LocalDateTime ultimaConexion;
 
     @Column(nullable = false, unique = true, length = 100)
     private String email;
@@ -51,5 +58,6 @@ public class Usuario {
     private LocalDateTime fechaCreacion;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Boleta> boletas;
 }

@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
 
@@ -33,8 +36,23 @@ public class Producto {
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
 
+    @Column(nullable = false)
+    private Double precio;
+
+    @Column(nullable = false)
+    private Integer stock;
+
     @Column(columnDefinition = "TEXT")
-    private String tamaños;
+    private String ingredientes;
+
+    private String formatoVenta;
+    private Integer porciones;
+    private String peso;
+    private String duracion;
+    private String tiempoPreparacion;
+
+    @Column(columnDefinition = "TEXT")
+    private String opcionPersonalizacion;
 
     @Column(length = 500)
     private String notas;
@@ -43,5 +61,8 @@ public class Producto {
     private Boolean activo;
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<DetalleBoleta> detallesBoleta;
 }

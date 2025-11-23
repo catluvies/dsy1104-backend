@@ -59,7 +59,15 @@ public class ProductoService {
         producto.setDescripcion(productoDTO.getDescripcion());
         producto.setImagenUrl(productoDTO.getImagenUrl());
         producto.setCategoria(categoria);
-        producto.setTamaños(productoDTO.getTamaños());
+        producto.setPrecio(productoDTO.getPrecio());
+        producto.setStock(productoDTO.getStock());
+        producto.setIngredientes(productoDTO.getIngredientes());
+        producto.setFormatoVenta(productoDTO.getFormatoVenta());
+        producto.setPorciones(productoDTO.getPorciones());
+        producto.setPeso(productoDTO.getPeso());
+        producto.setDuracion(productoDTO.getDuracion());
+        producto.setTiempoPreparacion(productoDTO.getTiempoPreparacion());
+        producto.setOpcionPersonalizacion(productoDTO.getOpcionPersonalizacion());
         producto.setNotas(productoDTO.getNotas());
         producto.setActivo(true);
 
@@ -82,7 +90,15 @@ public class ProductoService {
         producto.setDescripcion(productoDTO.getDescripcion());
         producto.setImagenUrl(productoDTO.getImagenUrl());
         producto.setCategoria(categoria);
-        producto.setTamaños(productoDTO.getTamaños());
+        producto.setPrecio(productoDTO.getPrecio());
+        producto.setStock(productoDTO.getStock());
+        producto.setIngredientes(productoDTO.getIngredientes());
+        producto.setFormatoVenta(productoDTO.getFormatoVenta());
+        producto.setPorciones(productoDTO.getPorciones());
+        producto.setPeso(productoDTO.getPeso());
+        producto.setDuracion(productoDTO.getDuracion());
+        producto.setTiempoPreparacion(productoDTO.getTiempoPreparacion());
+        producto.setOpcionPersonalizacion(productoDTO.getOpcionPersonalizacion());
         producto.setNotas(productoDTO.getNotas());
         producto.setActivo(productoDTO.getActivo());
 
@@ -105,7 +121,15 @@ public class ProductoService {
                 producto.getImagenUrl(),
                 producto.getCategoria().getId(),
                 producto.getCategoria().getNombre(),
-                producto.getTamaños(),
+                producto.getPrecio(),
+                producto.getStock(),
+                producto.getIngredientes(),
+                producto.getFormatoVenta(),
+                producto.getPorciones(),
+                producto.getPeso(),
+                producto.getDuracion(),
+                producto.getTiempoPreparacion(),
+                producto.getOpcionPersonalizacion(),
                 producto.getNotas(),
                 producto.getActivo());
     }

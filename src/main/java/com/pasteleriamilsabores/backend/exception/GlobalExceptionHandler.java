@@ -25,7 +25,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGeneral(Exception ex) {
+        ex.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("timestamp", Instant.now(), "mensaje", "Error interno del servidor"));
+                .body(Map.of("timestamp", Instant.now(), "mensaje", "Error interno del servidor: " + ex.getMessage()));
     }
 }

@@ -31,9 +31,13 @@ public class AuthService {
             throw new BadRequestException("Credenciales inválidas");
         }
 
+        usuario.setUltimaConexion(java.time.LocalDateTime.now());
+        usuarioRepository.save(usuario);
+
         String token = jwtUtil.generarToken(usuario.getEmail(), usuario.getRol());
 
-        return new AuthResponse(token, usuario.getId(), usuario.getNombre(), usuario.getEmail(), usuario.getRol());
+        return new AuthResponse(token, usuario.getId(), usuario.getNombre() + " " + usuario.getApellido(),
+                usuario.getEmail(), usuario.getRol());
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -43,6 +47,7 @@ public class AuthService {
 
         Usuario usuario = new Usuario();
         usuario.setNombre(request.getNombre());
+        usuario.setApellido(request.getApellido());
         usuario.setEmail(request.getEmail());
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
         usuario.setRol("ROLE_CLIENTE");
@@ -55,6 +60,7 @@ public class AuthService {
 
         String token = jwtUtil.generarToken(guardado.getEmail(), guardado.getRol());
 
-        return new AuthResponse(token, guardado.getId(), guardado.getNombre(), guardado.getEmail(), guardado.getRol());
+        return new AuthResponse(token, guardado.getId(), guardado.getNombre() + " " + guardado.getApellido(),
+                guardado.getEmail(), guardado.getRol());
     }
 }
