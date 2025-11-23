@@ -4,27 +4,28 @@ import com.pasteleriamilsabores.backend.exception.BadRequestException;
 import com.pasteleriamilsabores.backend.exception.ResourceNotFoundException;
 import com.pasteleriamilsabores.backend.model.Usuario;
 import com.pasteleriamilsabores.backend.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public List<Usuario> listarTodos() {
         return usuarioRepository.findAll();
     }
 
-    public Optional<Usuario> buscarPorId(Long id) {
+    public Optional<Usuario> buscarPorId(long id) {
         return usuarioRepository.findById(id);
     }
 
@@ -46,7 +47,7 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public Usuario actualizarUsuario(Long id, String nombre, String email) {
+    public Usuario actualizarUsuario(long id, String nombre, String email) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
@@ -61,7 +62,7 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public Usuario cambiarRol(Long id, String nuevoRol) {
+    public Usuario cambiarRol(long id, String nuevoRol) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
@@ -69,7 +70,7 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
 
-    public void eliminarUsuario(Long id) {
+    public void eliminarUsuario(long id) {
         if (!usuarioRepository.existsById(id)) {
             throw new ResourceNotFoundException("Usuario no encontrado");
         }

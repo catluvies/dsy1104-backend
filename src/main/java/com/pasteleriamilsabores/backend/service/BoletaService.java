@@ -9,7 +9,7 @@ import com.pasteleriamilsabores.backend.model.Usuario;
 import com.pasteleriamilsabores.backend.repository.BoletaRepository;
 import com.pasteleriamilsabores.backend.repository.ProductoRepository;
 import com.pasteleriamilsabores.backend.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,17 +17,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class BoletaService {
 
-    @Autowired
-    private BoletaRepository boletaRepository;
+    private final BoletaRepository boletaRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private ProductoRepository productoRepository;
+    private final ProductoRepository productoRepository;
 
     public List<BoletaDTO> listarTodas() {
         return boletaRepository.findAll().stream()
@@ -35,20 +35,20 @@ public class BoletaService {
                 .collect(Collectors.toList());
     }
 
-    public List<BoletaDTO> listarPorUsuario(Long usuarioId) {
+    public List<BoletaDTO> listarPorUsuario(long usuarioId) {
         return boletaRepository.findByUsuarioId(usuarioId).stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
 
-    public BoletaDTO buscarPorId(Long id) {
+    public BoletaDTO buscarPorId(long id) {
         Boleta boleta = boletaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Boleta no encontrada"));
         return convertirADTO(boleta);
     }
 
     @Transactional
-    public BoletaDTO crearBoleta(Long usuarioId, CrearBoletaRequest request) {
+    public BoletaDTO crearBoleta(long usuarioId, CrearBoletaRequest request) {
         Usuario usuario = usuarioRepository.findById(usuarioId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
@@ -60,7 +60,12 @@ public class BoletaService {
         List<DetalleBoleta> detalles = new ArrayList<>();
 
         for (DetalleBoletaRequest detalleRequest : request.getDetalles()) {
-            Producto producto = productoRepository.findById(detalleRequest.getProductoId())
+            if (detalleRequest.getProductoId() == null) {
+                throw new IllegalArgumentException("El ID del producto es requerido");
+            }
+            long productoId = detalleRequest.getProductoId();
+
+            Producto producto = productoRepository.findById(productoId)
                     .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
             DetalleBoleta detalle = new DetalleBoleta();
@@ -82,7 +87,7 @@ public class BoletaService {
         return convertirADTO(guardada);
     }
 
-    public BoletaDTO actualizarEstado(Long id, String nuevoEstado) {
+    public BoletaDTO actualizarEstado(long id, String nuevoEstado) {
         Boleta boleta = boletaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Boleta no encontrada"));
 
@@ -91,7 +96,7 @@ public class BoletaService {
         return convertirADTO(actualizada);
     }
 
-    public void eliminarBoleta(Long id) {
+    public void eliminarBoleta(long id) {
         if (!boletaRepository.existsById(id)) {
             throw new ResourceNotFoundException("Boleta no encontrada");
         }
@@ -107,8 +112,7 @@ public class BoletaService {
                         detalle.getCantidad(),
                         detalle.getPrecioUnitario(),
                         detalle.getSubtotal(),
-                        detalle.getTamaño()
-                ))
+                        detalle.getTamaño()))
                 .collect(Collectors.toList());
 
         return new BoletaDTO(
@@ -118,7 +122,6 @@ public class BoletaService {
                 boleta.getFecha(),
                 boleta.getTotal(),
                 boleta.getEstado(),
-                detallesDTO
-        );
+                detallesDTO);
     }
 }

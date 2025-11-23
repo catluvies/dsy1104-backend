@@ -6,20 +6,21 @@ import com.pasteleriamilsabores.backend.model.Categoria;
 import com.pasteleriamilsabores.backend.model.Producto;
 import com.pasteleriamilsabores.backend.repository.CategoriaRepository;
 import com.pasteleriamilsabores.backend.repository.ProductoRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ProductoService {
 
-    @Autowired
-    private ProductoRepository productoRepository;
+    private final ProductoRepository productoRepository;
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    private final CategoriaRepository categoriaRepository;
 
     public List<ProductoDTO> listarTodos() {
         return productoRepository.findAll().stream()
@@ -33,20 +34,24 @@ public class ProductoService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductoDTO> listarPorCategoria(Long categoriaId) {
+    public List<ProductoDTO> listarPorCategoria(long categoriaId) {
         return productoRepository.findByCategoriaId(categoriaId).stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
 
-    public ProductoDTO buscarPorId(Long id) {
+    public ProductoDTO buscarPorId(long id) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
         return convertirADTO(producto);
     }
 
     public ProductoDTO crearProducto(ProductoDTO productoDTO) {
-        Categoria categoria = categoriaRepository.findById(productoDTO.getCategoriaId())
+        if (productoDTO.getCategoriaId() == null) {
+            throw new ResourceNotFoundException("El ID de la categoría es obligatorio");
+        }
+        long categoriaId = productoDTO.getCategoriaId();
+        Categoria categoria = categoriaRepository.findById(categoriaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
 
         Producto producto = new Producto();
@@ -62,11 +67,15 @@ public class ProductoService {
         return convertirADTO(guardado);
     }
 
-    public ProductoDTO actualizarProducto(Long id, ProductoDTO productoDTO) {
+    public ProductoDTO actualizarProducto(long id, ProductoDTO productoDTO) {
         Producto producto = productoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
-        Categoria categoria = categoriaRepository.findById(productoDTO.getCategoriaId())
+        if (productoDTO.getCategoriaId() == null) {
+            throw new ResourceNotFoundException("El ID de la categoría es obligatorio");
+        }
+        long categoriaId = productoDTO.getCategoriaId();
+        Categoria categoria = categoriaRepository.findById(categoriaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
 
         producto.setNombre(productoDTO.getNombre());
@@ -81,7 +90,7 @@ public class ProductoService {
         return convertirADTO(actualizado);
     }
 
-    public void eliminarProducto(Long id) {
+    public void eliminarProducto(long id) {
         if (!productoRepository.existsById(id)) {
             throw new ResourceNotFoundException("Producto no encontrado");
         }
@@ -98,7 +107,6 @@ public class ProductoService {
                 producto.getCategoria().getNombre(),
                 producto.getTamaños(),
                 producto.getNotas(),
-                producto.getActivo()
-        );
+                producto.getActivo());
     }
 }

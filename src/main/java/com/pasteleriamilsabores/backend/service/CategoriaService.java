@@ -4,17 +4,19 @@ import com.pasteleriamilsabores.backend.dto.CategoriaDTO;
 import com.pasteleriamilsabores.backend.exception.ResourceNotFoundException;
 import com.pasteleriamilsabores.backend.model.Categoria;
 import com.pasteleriamilsabores.backend.repository.CategoriaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class CategoriaService {
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    private final CategoriaRepository categoriaRepository;
 
     public List<CategoriaDTO> listarTodas() {
         return categoriaRepository.findAll().stream()
@@ -28,7 +30,7 @@ public class CategoriaService {
                 .collect(Collectors.toList());
     }
 
-    public CategoriaDTO buscarPorId(Long id) {
+    public CategoriaDTO buscarPorId(long id) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
         return convertirADTO(categoria);
@@ -45,7 +47,7 @@ public class CategoriaService {
         return convertirADTO(guardada);
     }
 
-    public CategoriaDTO actualizarCategoria(Long id, CategoriaDTO categoriaDTO) {
+    public CategoriaDTO actualizarCategoria(long id, CategoriaDTO categoriaDTO) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
 
@@ -58,7 +60,7 @@ public class CategoriaService {
         return convertirADTO(actualizada);
     }
 
-    public void eliminarCategoria(Long id) {
+    public void eliminarCategoria(long id) {
         if (!categoriaRepository.existsById(id)) {
             throw new ResourceNotFoundException("Categoría no encontrada");
         }
@@ -71,7 +73,6 @@ public class CategoriaService {
                 categoria.getNombre(),
                 categoria.getDescripcion(),
                 categoria.getImagen(),
-                categoria.getActiva()
-        );
+                categoria.getActiva());
     }
 }

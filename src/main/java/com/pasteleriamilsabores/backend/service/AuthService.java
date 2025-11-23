@@ -7,21 +7,21 @@ import com.pasteleriamilsabores.backend.exception.BadRequestException;
 import com.pasteleriamilsabores.backend.model.Usuario;
 import com.pasteleriamilsabores.backend.repository.UsuarioRepository;
 import com.pasteleriamilsabores.backend.security.JwtUtil;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     public AuthResponse login(LoginRequest request) {
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
