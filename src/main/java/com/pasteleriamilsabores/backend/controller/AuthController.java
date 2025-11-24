@@ -28,4 +28,16 @@ public class AuthController {
     public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.register(request));
     }
+
+    @PostMapping("/register/admin")
+    public ResponseEntity<?> registerAdmin(
+            @RequestHeader("X-Admin-Secret") String secret,
+            @Valid @RequestBody RegisterRequest request) {
+
+        if (!"MilSaboresAdmin2024".equals(secret)) {
+            return ResponseEntity.status(403).body("Acceso denegado: Clave de administrador incorrecta");
+        }
+
+        return ResponseEntity.ok(authService.registerAdmin(request));
+    }
 }
