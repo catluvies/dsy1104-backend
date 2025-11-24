@@ -87,7 +87,6 @@ public class BoletaService {
             detalle.setCantidad(detalleRequest.getCantidad());
             detalle.setPrecioUnitario(producto.getPrecio()); // Usar precio actual del producto
             detalle.setSubtotal(detalleRequest.getCantidad() * producto.getPrecio());
-            detalle.setTamaño(detalleRequest.getTamaño());
 
             subtotal += detalle.getSubtotal();
             detalles.add(detalle);
@@ -125,8 +124,7 @@ public class BoletaService {
                         detalle.getProducto().getNombre(),
                         detalle.getCantidad(),
                         detalle.getPrecioUnitario(),
-                        detalle.getSubtotal(),
-                        detalle.getTamaño()))
+                        detalle.getSubtotal()))
                 .collect(Collectors.toList());
 
         return new BoletaDTO(

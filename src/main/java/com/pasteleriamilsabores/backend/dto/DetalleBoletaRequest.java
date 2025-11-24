@@ -16,6 +16,4 @@ public class DetalleBoletaRequest {
 
     @NotNull(message = "El precio unitario es obligatorio")
     private Double precioUnitario;
-
-    private String tamaño;
 }

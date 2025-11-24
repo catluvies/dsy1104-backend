@@ -40,7 +40,4 @@ public class DetalleBoleta {
 
     @Column(nullable = false)
     private Double subtotal;
-
-    @Column(length = 100)
-    private String tamaño;
 }

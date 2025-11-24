@@ -15,5 +15,4 @@ public class DetalleBoletaDTO {
     private Integer cantidad;
     private Double precioUnitario;
     private Double subtotal;
-    private String tamaño;
 }
