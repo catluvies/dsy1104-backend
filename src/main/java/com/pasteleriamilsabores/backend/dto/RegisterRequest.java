@@ -2,6 +2,7 @@ package com.pasteleriamilsabores.backend.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -25,6 +26,7 @@ public class RegisterRequest {
     private String password;
 
     @NotBlank(message = "El RUT es obligatorio")
+    @Pattern(regexp = "^(\\d{1,2}\\.\\d{3}\\.\\d{3}-[\\dkK])$", message = "El RUT debe tener el formato XX.XXX.XXX-X (ej: 12.345.678-9)")
     private String rut;
 
     private String telefono;
