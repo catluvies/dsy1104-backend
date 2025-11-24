@@ -34,7 +34,7 @@ public class AuthService {
         usuario.setUltimaConexion(java.time.LocalDateTime.now());
         usuarioRepository.save(usuario);
 
-        String token = jwtUtil.generarToken(usuario.getEmail(), usuario.getRol());
+        String token = jwtUtil.generarToken(usuario.getEmail(), usuario.getRol(), usuario.getId());
 
         return new AuthResponse(token, usuario.getId(), usuario.getNombre() + " " + usuario.getApellido(),
                 usuario.getEmail(), usuario.getRol());
@@ -60,7 +60,7 @@ public class AuthService {
 
         Usuario guardado = usuarioRepository.save(usuario);
 
-        String token = jwtUtil.generarToken(guardado.getEmail(), guardado.getRol());
+        String token = jwtUtil.generarToken(guardado.getEmail(), guardado.getRol(), guardado.getId());
 
         return new AuthResponse(token, guardado.getId(), guardado.getNombre() + " " + guardado.getApellido(),
                 guardado.getEmail(), guardado.getRol());
@@ -86,7 +86,7 @@ public class AuthService {
 
         Usuario guardado = usuarioRepository.save(usuario);
 
-        String token = jwtUtil.generarToken(guardado.getEmail(), guardado.getRol());
+        String token = jwtUtil.generarToken(guardado.getEmail(), guardado.getRol(), guardado.getId());
 
         return new AuthResponse(token, guardado.getId(), guardado.getNombre() + " " + guardado.getApellido(),
                 guardado.getEmail(), guardado.getRol());

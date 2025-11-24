@@ -24,10 +24,11 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String generarToken(String email, String rol) {
+    public String generarToken(String email, String rol, Long userId) {
         return Jwts.builder()
                 .subject(email)
                 .claim("rol", rol)
+                .claim("userId", userId)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
@@ -40,6 +41,10 @@ public class JwtUtil {
 
     public String extraerRol(String token) {
         return extraerClaims(token).get("rol", String.class);
+    }
+
+    public Long extraerUserId(String token) {
+        return extraerClaims(token).get("userId", Long.class);
     }
 
     public boolean validarToken(String token, String email) {
