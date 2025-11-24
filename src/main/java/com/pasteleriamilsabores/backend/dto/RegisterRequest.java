@@ -32,4 +32,6 @@ public class RegisterRequest {
     private String direccion;
 
     private String comuna;
+
+    private String region;
 }

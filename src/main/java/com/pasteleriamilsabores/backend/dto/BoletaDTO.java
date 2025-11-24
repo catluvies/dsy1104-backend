@@ -21,6 +21,7 @@ public class BoletaDTO {
     private Double costoEnvio;
     private String metodoPago;
     private String direccionEntrega;
+    private String region;
     private String notasAdicionales;
     private String estado;
     private List<DetalleBoletaDTO> detalles;

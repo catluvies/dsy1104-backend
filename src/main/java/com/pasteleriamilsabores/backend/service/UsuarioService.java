@@ -50,6 +50,7 @@ public class UsuarioService {
                 .telefono(usuario.getTelefono())
                 .direccion(usuario.getDireccion())
                 .comuna(usuario.getComuna())
+                .region(usuario.getRegion())
                 .ultimaConexion(usuario.getUltimaConexion())
                 .historialCompras(historialCompras)
                 .build();

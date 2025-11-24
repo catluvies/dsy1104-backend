@@ -39,6 +39,9 @@ public class Boleta {
     @Column(columnDefinition = "TEXT")
     private String direccionEntrega;
 
+    @Column(length = 100)
+    private String region;
+
     private Double subtotal;
 
     private Double costoEnvio;

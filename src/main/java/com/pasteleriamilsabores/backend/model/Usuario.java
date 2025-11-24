@@ -53,6 +53,9 @@ public class Usuario {
     @Column(length = 100)
     private String comuna;
 
+    @Column(length = 100)
+    private String region;
+
     @CreationTimestamp
     @Column(name = "fecha_creacion", updatable = false)
     private LocalDateTime fechaCreacion;

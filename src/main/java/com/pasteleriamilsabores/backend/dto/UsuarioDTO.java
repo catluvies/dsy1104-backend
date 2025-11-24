@@ -21,6 +21,7 @@ public class UsuarioDTO {
     private String telefono;
     private String direccion;
     private String comuna;
+    private String region;
     private LocalDateTime ultimaConexion;
     private Integer historialCompras;
 }

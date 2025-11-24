@@ -57,6 +57,8 @@ public class BoletaService {
         boleta.setUsuario(usuario);
         boleta.setEstado("PENDIENTE");
         boleta.setDireccionEntrega(request.getDireccionEntrega());
+        boleta.setRegion(request.getRegion() != null && !request.getRegion().isEmpty() ? request.getRegion()
+                : "Región Metropolitana");
         boleta.setMetodoPago(request.getMetodoPago());
         boleta.setNotasAdicionales(request.getNotasAdicionales());
         boleta.setCostoEnvio(request.getCostoEnvio() != null ? request.getCostoEnvio() : 0.0);
@@ -137,6 +139,7 @@ public class BoletaService {
                 boleta.getCostoEnvio(),
                 boleta.getMetodoPago(),
                 boleta.getDireccionEntrega(),
+                boleta.getRegion(),
                 boleta.getNotasAdicionales(),
                 boleta.getEstado(),
                 detallesDTO);
