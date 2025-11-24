@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class AuthController {
@@ -39,5 +39,11 @@ public class AuthController {
         }
 
         return ResponseEntity.ok(authService.registerAdmin(request));
+    }
+
+    @PostMapping("/register/vendedor")
+    public ResponseEntity<AuthResponse> registerVendedor(@Valid @RequestBody RegisterRequest request) {
+        // La seguridad de este endpoint (solo ADMIN) se maneja en SecurityConfig
+        return ResponseEntity.ok(authService.registerVendedor(request));
     }
 }

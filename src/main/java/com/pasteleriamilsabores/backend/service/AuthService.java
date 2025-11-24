@@ -41,32 +41,18 @@ public class AuthService {
     }
 
     public AuthResponse register(RegisterRequest request) {
-        if (usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("El email ya está registrado");
-        }
-
-        Usuario usuario = new Usuario();
-        usuario.setNombre(request.getNombre());
-        usuario.setApellido(request.getApellido());
-        usuario.setEmail(request.getEmail());
-        usuario.setPassword(passwordEncoder.encode(request.getPassword()));
-        usuario.setRol("ROLE_CLIENTE");
-        usuario.setRut(request.getRut());
-        usuario.setTelefono(request.getTelefono());
-        usuario.setDireccion(request.getDireccion());
-        usuario.setComuna(request.getComuna());
-        usuario.setRegion(request.getRegion() != null && !request.getRegion().isEmpty() ? request.getRegion()
-                : "Región Metropolitana");
-
-        Usuario guardado = usuarioRepository.save(usuario);
-
-        String token = jwtUtil.generarToken(guardado.getEmail(), guardado.getRol(), guardado.getId());
-
-        return new AuthResponse(token, guardado.getId(), guardado.getNombre() + " " + guardado.getApellido(),
-                guardado.getEmail(), guardado.getRol());
+        return crearUsuarioBase(request, "ROLE_CLIENTE");
     }
 
     public AuthResponse registerAdmin(RegisterRequest request) {
+        return crearUsuarioBase(request, "ROLE_ADMIN");
+    }
+
+    public AuthResponse registerVendedor(RegisterRequest request) {
+        return crearUsuarioBase(request, "ROLE_VENDEDOR");
+    }
+
+    private AuthResponse crearUsuarioBase(RegisterRequest request, String rol) {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("El email ya está registrado");
         }
@@ -76,7 +62,7 @@ public class AuthService {
         usuario.setApellido(request.getApellido());
         usuario.setEmail(request.getEmail());
         usuario.setPassword(passwordEncoder.encode(request.getPassword()));
-        usuario.setRol("ROLE_ADMIN"); // Rol de administrador
+        usuario.setRol(rol);
         usuario.setRut(request.getRut());
         usuario.setTelefono(request.getTelefono());
         usuario.setDireccion(request.getDireccion());

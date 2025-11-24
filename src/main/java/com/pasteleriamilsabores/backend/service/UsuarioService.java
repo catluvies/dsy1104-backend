@@ -20,7 +20,7 @@ public class UsuarioService {
 
     public List<UsuarioDTO> listarUsuarios() {
         return usuarioRepository.findAll().stream()
-                .map(this::convertirADTO)
+                .map(usuario -> convertirADTO(usuario, false))
                 .collect(Collectors.toList());
     }
 
@@ -30,14 +30,16 @@ public class UsuarioService {
         }
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
-        return convertirADTO(usuario);
+        return convertirADTO(usuario, true);
     }
 
-    private UsuarioDTO convertirADTO(Usuario usuario) {
+    private UsuarioDTO convertirADTO(Usuario usuario, boolean cargarHistorial) {
         int historialCompras = 0;
-        Long usuarioId = usuario.getId();
-        if (usuarioId != null) {
-            historialCompras = boletaRepository.countByUsuarioId(usuarioId);
+        if (cargarHistorial) {
+            Long usuarioId = usuario.getId();
+            if (usuarioId != null) {
+                historialCompras = boletaRepository.countByUsuarioId(usuarioId);
+            }
         }
 
         return UsuarioDTO.builder()

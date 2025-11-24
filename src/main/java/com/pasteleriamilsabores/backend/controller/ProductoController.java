@@ -13,7 +13,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/productos")
+@RequestMapping("/api/v1/productos")
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class ProductoController {
@@ -43,7 +43,7 @@ public class ProductoController {
     @PostMapping
     public ResponseEntity<ProductoDTO> crear(@RequestBody ProductoDTO productoDTO) {
         ProductoDTO creado = productoService.crearProducto(productoDTO);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/productos/{id}")
                 .buildAndExpand(creado.getId()).toUri();
         return ResponseEntity.created(location).body(creado);
     }

@@ -15,7 +15,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/boletas")
+@RequestMapping("/api/v1/boletas")
 @CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 public class BoletaController {
