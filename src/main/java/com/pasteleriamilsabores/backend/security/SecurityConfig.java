@@ -37,6 +37,7 @@ public class SecurityConfig {
                         // Endpoints públicos
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers("/uploads/**").permitAll()
 
                         // Categorías y Productos: GET público
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/categorias/**",

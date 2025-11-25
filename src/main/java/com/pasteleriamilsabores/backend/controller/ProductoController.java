@@ -1,10 +1,13 @@
 package com.pasteleriamilsabores.backend.controller;
 
 import com.pasteleriamilsabores.backend.dto.ProductoDTO;
+import com.pasteleriamilsabores.backend.service.FileStorageService;
 import com.pasteleriamilsabores.backend.service.ProductoService;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -19,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductoController {
 
     private final ProductoService productoService;
+    private final FileStorageService fileStorageService;
 
     @GetMapping
     public ResponseEntity<List<ProductoDTO>> listarTodos() {
@@ -40,16 +44,38 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.listarPorCategoria(categoriaId));
     }
 
-    @PostMapping
-    public ResponseEntity<ProductoDTO> crear(@RequestBody ProductoDTO productoDTO) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductoDTO> crear(
+            @RequestPart("producto") ProductoDTO productoDTO,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+
+        if (imagen != null && !imagen.isEmpty()) {
+            String fileName = fileStorageService.storeFile(imagen);
+            // Construir URL relativa (o absoluta si prefieres)
+            // Para simplificar y que funcione en cualquier host, guardamos la ruta relativa
+            // El frontend deberá anteponer el dominio base
+            String fileUrl = "/uploads/" + fileName;
+            productoDTO.setImagenUrl(fileUrl);
+        }
+
         ProductoDTO creado = productoService.crearProducto(productoDTO);
-        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/productos/{id}")
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/productos/{id}")
                 .buildAndExpand(creado.getId()).toUri();
         return ResponseEntity.created(location).body(creado);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ProductoDTO> actualizar(@PathVariable long id, @RequestBody ProductoDTO productoDTO) {
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductoDTO> actualizar(
+            @PathVariable long id,
+            @RequestPart("producto") ProductoDTO productoDTO,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+
+        if (imagen != null && !imagen.isEmpty()) {
+            String fileName = fileStorageService.storeFile(imagen);
+            String fileUrl = "/uploads/" + fileName;
+            productoDTO.setImagenUrl(fileUrl);
+        }
+
         ProductoDTO actualizado = productoService.actualizarProducto(id, productoDTO);
         return ResponseEntity.ok(actualizado);
     }
