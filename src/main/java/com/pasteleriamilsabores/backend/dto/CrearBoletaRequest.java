@@ -15,6 +15,7 @@ public class CrearBoletaRequest {
     @NotBlank(message = "La dirección de entrega es obligatoria")
     private String direccionEntrega;
 
+    private String comuna;
     private String region;
     private Double costoEnvio;
     private String metodoPago;

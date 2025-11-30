@@ -30,8 +30,8 @@ public class Boleta {
     private Usuario usuario;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime fecha;
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
+    private LocalDateTime fechaCreacion;
 
     @Column(nullable = false)
     private Double total;
@@ -39,8 +39,11 @@ public class Boleta {
     @Column(columnDefinition = "TEXT")
     private String direccionEntrega;
 
-    @Column(length = 100)
-    private String region;
+    @Column(name = "comuna_entrega", length = 100)
+    private String comunaEntrega;
+
+    @Column(name = "region_entrega", length = 100)
+    private String regionEntrega;
 
     private Double subtotal;
 
@@ -49,10 +52,13 @@ public class Boleta {
     private String metodoPago;
 
     @Column(columnDefinition = "TEXT")
-    private String notasAdicionales;
+    private String notas;
 
     @Column(length = 50, nullable = false)
     private String estado;
+
+    @Column(name = "fecha_entrega")
+    private java.time.LocalDate fechaEntrega;
 
     @OneToMany(mappedBy = "boleta", cascade = CascadeType.ALL)
     @JsonManagedReference

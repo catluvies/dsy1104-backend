@@ -29,8 +29,8 @@ public class Usuario {
     @Column(nullable = false, length = 50)
     private String apellido;
 
-    @Column(name = "ultima_conexion")
-    private LocalDateTime ultimaConexion;
+    @Column(nullable = false)
+    private Boolean activo;
 
     @Column(nullable = false, unique = true, length = 100)
     private String email;

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.util.List;
@@ -22,6 +23,9 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(unique = true, length = 50)
+    private String sku;
 
     @Column(nullable = false, length = 150)
     private String nombre;
@@ -51,14 +55,19 @@ public class Producto {
     private String duracion;
     private String tiempoPreparacion;
 
-    @Column(columnDefinition = "TEXT")
-    private String opcionPersonalizacion;
-
     @Column(length = 500)
     private String notas;
 
     @Column(nullable = false)
     private Boolean activo;
+
+    @CreationTimestamp
+    @Column(name = "fecha_creacion", nullable = false, updatable = false)
+    private java.time.LocalDateTime fechaCreacion;
+
+    @org.hibernate.annotations.UpdateTimestamp
+    @Column(name = "fecha_modificacion")
+    private java.time.LocalDateTime fechaModificacion;
 
     @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
     @JsonIgnore

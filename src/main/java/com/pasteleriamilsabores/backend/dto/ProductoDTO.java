@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class ProductoDTO {
 
     private Long id;
+    private String sku;
     private String nombre;
     private String descripcion;
     private String imagenUrl;
@@ -23,7 +24,7 @@ public class ProductoDTO {
     private String peso;
     private String duracion;
     private String tiempoPreparacion;
-    private String opcionPersonalizacion;
+
     private String notas;
     private Boolean activo;
 }

@@ -53,7 +53,7 @@ public class UsuarioService {
                 .direccion(usuario.getDireccion())
                 .comuna(usuario.getComuna())
                 .region(usuario.getRegion())
-                .ultimaConexion(usuario.getUltimaConexion())
+                .activo(usuario.getActivo())
                 .historialCompras(historialCompras)
                 .build();
     }

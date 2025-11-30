@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @AllArgsConstructor
@@ -22,6 +20,6 @@ public class UsuarioDTO {
     private String direccion;
     private String comuna;
     private String region;
-    private LocalDateTime ultimaConexion;
+    private Boolean activo;
     private Integer historialCompras;
 }

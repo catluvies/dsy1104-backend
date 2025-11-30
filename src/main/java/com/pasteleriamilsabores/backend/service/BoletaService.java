@@ -57,10 +57,11 @@ public class BoletaService {
         boleta.setUsuario(usuario);
         boleta.setEstado("PENDIENTE");
         boleta.setDireccionEntrega(request.getDireccionEntrega());
-        boleta.setRegion(request.getRegion() != null && !request.getRegion().isEmpty() ? request.getRegion()
+        boleta.setRegionEntrega(request.getRegion() != null && !request.getRegion().isEmpty() ? request.getRegion()
                 : "Región Metropolitana");
+        boleta.setComunaEntrega(request.getComuna() != null ? request.getComuna() : "");
         boleta.setMetodoPago(request.getMetodoPago());
-        boleta.setNotasAdicionales(request.getNotasAdicionales());
+        boleta.setNotas(request.getNotasAdicionales());
         boleta.setCostoEnvio(request.getCostoEnvio() != null ? request.getCostoEnvio() : 0.0);
 
         double subtotal = 0.0;
@@ -133,14 +134,16 @@ public class BoletaService {
                 boleta.getId(),
                 boleta.getUsuario().getId(),
                 boleta.getUsuario().getNombre() + " " + boleta.getUsuario().getApellido(),
-                boleta.getFecha(),
+                boleta.getFechaCreacion(),
                 boleta.getTotal(),
                 boleta.getSubtotal(),
                 boleta.getCostoEnvio(),
                 boleta.getMetodoPago(),
                 boleta.getDireccionEntrega(),
-                boleta.getRegion(),
-                boleta.getNotasAdicionales(),
+                boleta.getComunaEntrega(),
+                boleta.getRegionEntrega(),
+                boleta.getNotas(),
+                boleta.getFechaEntrega(),
                 boleta.getEstado(),
                 detallesDTO);
     }

@@ -31,9 +31,6 @@ public class AuthService {
             throw new BadRequestException("Credenciales inválidas");
         }
 
-        usuario.setUltimaConexion(java.time.LocalDateTime.now());
-        usuarioRepository.save(usuario);
-
         String token = jwtUtil.generarToken(usuario.getEmail(), usuario.getRol(), usuario.getId());
 
         return new AuthResponse(token, usuario.getId(), usuario.getNombre() + " " + usuario.getApellido(),
@@ -69,6 +66,7 @@ public class AuthService {
         usuario.setComuna(request.getComuna());
         usuario.setRegion(request.getRegion() != null && !request.getRegion().isEmpty() ? request.getRegion()
                 : "Región Metropolitana");
+        usuario.setActivo(true);
 
         Usuario guardado = usuarioRepository.save(usuario);
 

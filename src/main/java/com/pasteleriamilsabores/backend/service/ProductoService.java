@@ -55,6 +55,7 @@ public class ProductoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
 
         Producto producto = new Producto();
+        producto.setSku(productoDTO.getSku());
         producto.setNombre(productoDTO.getNombre());
         producto.setDescripcion(productoDTO.getDescripcion());
         producto.setImagenUrl(productoDTO.getImagenUrl());
@@ -67,7 +68,7 @@ public class ProductoService {
         producto.setPeso(productoDTO.getPeso());
         producto.setDuracion(productoDTO.getDuracion());
         producto.setTiempoPreparacion(productoDTO.getTiempoPreparacion());
-        producto.setOpcionPersonalizacion(productoDTO.getOpcionPersonalizacion());
+
         producto.setNotas(productoDTO.getNotas());
         producto.setActivo(true);
 
@@ -86,6 +87,7 @@ public class ProductoService {
         Categoria categoria = categoriaRepository.findById(categoriaId)
                 .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada"));
 
+        producto.setSku(productoDTO.getSku());
         producto.setNombre(productoDTO.getNombre());
         producto.setDescripcion(productoDTO.getDescripcion());
         producto.setImagenUrl(productoDTO.getImagenUrl());
@@ -98,7 +100,7 @@ public class ProductoService {
         producto.setPeso(productoDTO.getPeso());
         producto.setDuracion(productoDTO.getDuracion());
         producto.setTiempoPreparacion(productoDTO.getTiempoPreparacion());
-        producto.setOpcionPersonalizacion(productoDTO.getOpcionPersonalizacion());
+
         producto.setNotas(productoDTO.getNotas());
         producto.setActivo(productoDTO.getActivo());
 
@@ -116,6 +118,7 @@ public class ProductoService {
     private ProductoDTO convertirADTO(Producto producto) {
         return new ProductoDTO(
                 producto.getId(),
+                producto.getSku(),
                 producto.getNombre(),
                 producto.getDescripcion(),
                 producto.getImagenUrl(),
@@ -129,7 +132,7 @@ public class ProductoService {
                 producto.getPeso(),
                 producto.getDuracion(),
                 producto.getTiempoPreparacion(),
-                producto.getOpcionPersonalizacion(),
+
                 producto.getNotas(),
                 producto.getActivo());
     }
