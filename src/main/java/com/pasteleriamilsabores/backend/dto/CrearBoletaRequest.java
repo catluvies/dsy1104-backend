@@ -16,7 +16,7 @@ public class CrearBoletaRequest {
     private String direccionEntrega;
 
     private String comuna;
-    private String region;
+    // region no se incluye porque siempre es "Región Metropolitana"
     private Double costoEnvio;
     private String metodoPago;
     private String notasAdicionales;

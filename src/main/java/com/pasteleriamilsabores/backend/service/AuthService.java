@@ -64,8 +64,7 @@ public class AuthService {
         usuario.setTelefono(request.getTelefono());
         usuario.setDireccion(request.getDireccion());
         usuario.setComuna(request.getComuna());
-        usuario.setRegion(request.getRegion() != null && !request.getRegion().isEmpty() ? request.getRegion()
-                : "Región Metropolitana");
+        usuario.setRegion("Región Metropolitana"); // Siempre fijo, solo opera en RM
         usuario.setActivo(true);
 
         Usuario guardado = usuarioRepository.save(usuario);

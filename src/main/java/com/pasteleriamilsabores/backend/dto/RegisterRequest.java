@@ -35,5 +35,5 @@ public class RegisterRequest {
 
     private String comuna;
 
-    private String region;
+    // region no se incluye porque siempre es "Región Metropolitana"
 }

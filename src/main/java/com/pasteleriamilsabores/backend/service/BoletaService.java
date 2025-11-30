@@ -57,8 +57,7 @@ public class BoletaService {
         boleta.setUsuario(usuario);
         boleta.setEstado("PENDIENTE");
         boleta.setDireccionEntrega(request.getDireccionEntrega());
-        boleta.setRegionEntrega(request.getRegion() != null && !request.getRegion().isEmpty() ? request.getRegion()
-                : "Región Metropolitana");
+        boleta.setRegionEntrega("Región Metropolitana"); // Siempre fijo, solo se entrega en RM
         boleta.setComunaEntrega(request.getComuna() != null ? request.getComuna() : "");
         boleta.setMetodoPago(request.getMetodoPago());
         boleta.setNotas(request.getNotasAdicionales());
