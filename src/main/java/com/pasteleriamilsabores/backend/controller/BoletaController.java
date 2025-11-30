@@ -2,9 +2,12 @@ package com.pasteleriamilsabores.backend.controller;
 
 import com.pasteleriamilsabores.backend.dto.BoletaDTO;
 import com.pasteleriamilsabores.backend.dto.CrearBoletaRequest;
+import com.pasteleriamilsabores.backend.security.UsuarioPrincipal;
 import com.pasteleriamilsabores.backend.service.BoletaService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -33,7 +36,16 @@ public class BoletaController {
     }
 
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<BoletaDTO>> listarPorUsuario(@PathVariable long usuarioId) {
+    public ResponseEntity<List<BoletaDTO>> listarPorUsuario(
+            @PathVariable long usuarioId,
+            Authentication authentication) {
+        UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
+        String rol = principal.getRol();
+
+        if (rol.equals("ROLE_CLIENTE") && !principal.getId().equals(usuarioId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         return ResponseEntity.ok(boletaService.listarPorUsuario(usuarioId));
     }
 
