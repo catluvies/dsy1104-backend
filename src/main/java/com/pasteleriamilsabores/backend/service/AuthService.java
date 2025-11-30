@@ -7,6 +7,7 @@ import com.pasteleriamilsabores.backend.exception.BadRequestException;
 import com.pasteleriamilsabores.backend.model.Usuario;
 import com.pasteleriamilsabores.backend.repository.UsuarioRepository;
 import com.pasteleriamilsabores.backend.security.JwtUtil;
+import com.pasteleriamilsabores.backend.util.AppConstants;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -64,7 +65,7 @@ public class AuthService {
         usuario.setTelefono(request.getTelefono());
         usuario.setDireccion(request.getDireccion());
         usuario.setComuna(request.getComuna());
-        usuario.setRegion("Región Metropolitana"); // Siempre fijo, solo opera en RM
+        usuario.setRegion(AppConstants.REGION_OPERACION);
         usuario.setActivo(true);
 
         Usuario guardado = usuarioRepository.save(usuario);

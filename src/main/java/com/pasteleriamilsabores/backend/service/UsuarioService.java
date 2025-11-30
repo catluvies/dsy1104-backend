@@ -1,6 +1,7 @@
 package com.pasteleriamilsabores.backend.service;
 
 import com.pasteleriamilsabores.backend.dto.UsuarioDTO;
+import com.pasteleriamilsabores.backend.exception.BadRequestException;
 import com.pasteleriamilsabores.backend.exception.ResourceNotFoundException;
 import com.pasteleriamilsabores.backend.model.Usuario;
 import com.pasteleriamilsabores.backend.repository.BoletaRepository;
@@ -26,7 +27,7 @@ public class UsuarioService {
 
     public UsuarioDTO obtenerUsuarioPorId(Long id) {
         if (id == null) {
-            throw new IllegalArgumentException("El ID es requerido");
+            throw new BadRequestException("El ID es requerido");
         }
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));

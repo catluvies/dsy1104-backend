@@ -10,6 +10,7 @@ import com.pasteleriamilsabores.backend.model.Usuario;
 import com.pasteleriamilsabores.backend.repository.BoletaRepository;
 import com.pasteleriamilsabores.backend.repository.ProductoRepository;
 import com.pasteleriamilsabores.backend.repository.UsuarioRepository;
+import com.pasteleriamilsabores.backend.util.AppConstants;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,9 +56,9 @@ public class BoletaService {
 
         Boleta boleta = new Boleta();
         boleta.setUsuario(usuario);
-        boleta.setEstado("PENDIENTE");
+        boleta.setEstado(AppConstants.ESTADO_PENDIENTE);
         boleta.setDireccionEntrega(request.getDireccionEntrega());
-        boleta.setRegionEntrega("Región Metropolitana"); // Siempre fijo, solo se entrega en RM
+        boleta.setRegionEntrega(AppConstants.REGION_OPERACION);
         boleta.setComunaEntrega(request.getComuna() != null ? request.getComuna() : "");
         boleta.setMetodoPago(request.getMetodoPago());
         boleta.setNotas(request.getNotasAdicionales());
@@ -68,7 +69,7 @@ public class BoletaService {
 
         for (DetalleBoletaRequest detalleRequest : request.getDetalles()) {
             if (detalleRequest.getProductoId() == null) {
-                throw new IllegalArgumentException("El ID del producto es requerido");
+                throw new BadRequestException("El ID del producto es requerido");
             }
             long productoId = detalleRequest.getProductoId();
 
@@ -79,7 +80,6 @@ public class BoletaService {
                 throw new BadRequestException("Stock insuficiente para el producto: " + producto.getNombre());
             }
 
-            // Descontar stock
             producto.setStock(producto.getStock() - detalleRequest.getCantidad());
             productoRepository.save(producto);
 
@@ -87,7 +87,7 @@ public class BoletaService {
             detalle.setBoleta(boleta);
             detalle.setProducto(producto);
             detalle.setCantidad(detalleRequest.getCantidad());
-            detalle.setPrecioUnitario(producto.getPrecio()); // Usar precio actual del producto
+            detalle.setPrecioUnitario(producto.getPrecio());
             detalle.setSubtotal(detalleRequest.getCantidad() * producto.getPrecio());
 
             subtotal += detalle.getSubtotal();
