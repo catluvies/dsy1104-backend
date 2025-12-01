@@ -19,83 +19,98 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        public PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> {
-                })
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos
-                        .requestMatchers("/api/v1/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/uploads/**").permitAll()
+        @Bean
+        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http
+                                .csrf(csrf -> csrf.disable())
+                                .cors(cors -> {
+                                })
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authorizeHttpRequests(auth -> auth
+                                                // Endpoints de Auth específicos (Orden importa: específicos primero)
+                                                .requestMatchers("/api/v1/auth/register/vendedor").hasRole("ADMIN")
+                                                .requestMatchers("/api/v1/auth/cambiar-password").authenticated()
 
-                        // Categorías y Productos: GET público
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/categorias/**",
-                                "/api/v1/productos/**")
-                        .permitAll()
+                                                // Resto de Auth público
+                                                .requestMatchers("/api/v1/auth/**").permitAll()
+                                                .requestMatchers("/swagger-ui/**", "/api-docs/**", "/swagger-ui.html")
+                                                .permitAll()
+                                                .requestMatchers("/uploads/**").permitAll()
 
-                        // Categorías y Productos: Modificaciones solo ADMIN
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/categorias/**",
-                                "/api/v1/productos/**")
-                        .hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/v1/categorias/**",
-                                "/api/v1/productos/**")
-                        .hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.PATCH, "/api/v1/categorias/**",
-                                "/api/v1/productos/**")
-                        .hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/v1/categorias/**",
-                                "/api/v1/productos/**")
-                        .hasRole("ADMIN")
+                                                // Categorías y Productos: GET público
+                                                .requestMatchers(org.springframework.http.HttpMethod.GET,
+                                                                "/api/v1/categorias/**",
+                                                                "/api/v1/productos/**")
+                                                .permitAll()
 
-                        // Boletas:
-                        // - GET /api/v1/boletas (Todas): Solo Admin y Vendedor
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/boletas")
-                        .hasAnyRole("ADMIN", "VENDEDOR")
-                        // - GET /api/v1/boletas/** (Por ID o Usuario): Cliente también puede (para ver
-                        // las suyas)
-                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/boletas/**")
-                        .hasAnyRole("ADMIN", "VENDEDOR", "CLIENTE")
+                                                // Categorías y Productos: Modificaciones solo ADMIN
+                                                .requestMatchers(org.springframework.http.HttpMethod.POST,
+                                                                "/api/v1/categorias/**",
+                                                                "/api/v1/productos/**")
+                                                .hasRole("ADMIN")
+                                                .requestMatchers(org.springframework.http.HttpMethod.PUT,
+                                                                "/api/v1/categorias/**",
+                                                                "/api/v1/productos/**")
+                                                .hasRole("ADMIN")
+                                                .requestMatchers(org.springframework.http.HttpMethod.PATCH,
+                                                                "/api/v1/categorias/**",
+                                                                "/api/v1/productos/**")
+                                                .hasRole("ADMIN")
+                                                .requestMatchers(org.springframework.http.HttpMethod.DELETE,
+                                                                "/api/v1/categorias/**",
+                                                                "/api/v1/productos/**")
+                                                .hasRole("ADMIN")
 
-                        // - POST: Cliente (comprar) y Admin
-                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/boletas/**")
-                        .hasAnyRole("ADMIN", "CLIENTE")
-                        // - PATCH: Solo Admin (cambiar estados)
-                        .requestMatchers(org.springframework.http.HttpMethod.PATCH, "/api/v1/boletas/**")
-                        .hasRole("ADMIN")
-                        // - DELETE: Solo Admin
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/v1/boletas/**")
-                        .hasRole("ADMIN")
+                                                // Boletas:
+                                                // - GET /api/v1/boletas (Todas): Solo Admin y Vendedor
+                                                .requestMatchers(org.springframework.http.HttpMethod.GET,
+                                                                "/api/v1/boletas")
+                                                .hasAnyRole("ADMIN", "VENDEDOR")
+                                                // - GET /api/v1/boletas/** (Por ID o Usuario): Cliente también puede
+                                                // (para ver
+                                                // las suyas)
+                                                .requestMatchers(org.springframework.http.HttpMethod.GET,
+                                                                "/api/v1/boletas/**")
+                                                .hasAnyRole("ADMIN", "VENDEDOR", "CLIENTE")
 
-                        // Crear Vendedores: Solo Admin
-                        .requestMatchers("/api/v1/auth/register/vendedor").hasRole("ADMIN")
+                                                // - POST: Cliente (comprar) y Admin
+                                                .requestMatchers(org.springframework.http.HttpMethod.POST,
+                                                                "/api/v1/boletas/**")
+                                                .hasAnyRole("ADMIN", "CLIENTE")
+                                                // - PATCH: Solo Admin (cambiar estados)
+                                                .requestMatchers(org.springframework.http.HttpMethod.PATCH,
+                                                                "/api/v1/boletas/**")
+                                                .hasRole("ADMIN")
+                                                // - DELETE: Solo Admin
+                                                .requestMatchers(org.springframework.http.HttpMethod.DELETE,
+                                                                "/api/v1/boletas/**")
+                                                .hasRole("ADMIN")
 
-                        // Cambiar password: cualquier usuario autenticado
-                        .requestMatchers("/api/v1/auth/cambiar-password").authenticated()
+                                                // Usuarios: perfil propio (cualquier autenticado) - validación en
+                                                // @PreAuthorize
+                                                .requestMatchers(org.springframework.http.HttpMethod.PUT,
+                                                                "/api/v1/usuarios/*/perfil")
+                                                .authenticated()
 
-                        // Usuarios: perfil propio (cualquier autenticado) - validación en @PreAuthorize
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/v1/usuarios/*/perfil")
-                        .authenticated()
+                                                // Usuarios: modificaciones admin (PUT sin /perfil, DELETE)
+                                                .requestMatchers(org.springframework.http.HttpMethod.PUT,
+                                                                "/api/v1/usuarios/*")
+                                                .hasRole("ADMIN")
+                                                .requestMatchers(org.springframework.http.HttpMethod.DELETE,
+                                                                "/api/v1/usuarios/**")
+                                                .hasRole("ADMIN")
 
-                        // Usuarios: modificaciones admin (PUT sin /perfil, DELETE)
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/v1/usuarios/*")
-                        .hasRole("ADMIN")
-                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/v1/usuarios/**")
-                        .hasRole("ADMIN")
+                                                .anyRequest().authenticated())
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
-                        .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
-    }
+                return http.build();
+        }
 }
