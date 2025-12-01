@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/v1/productos")
-@CrossOrigin(origins = "http://localhost:5173")
 @RequiredArgsConstructor
 @Tag(name = "Productos", description = "Gestión de productos de la pastelería")
 public class ProductoController {
