@@ -6,6 +6,7 @@ import com.pasteleriamilsabores.backend.security.UsuarioPrincipal;
 import com.pasteleriamilsabores.backend.service.BoletaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,9 +58,9 @@ public class BoletaController {
 
     @Operation(summary = "Crear boleta", description = "Crea una nueva boleta con sus detalles")
     @PostMapping("/usuario/{usuarioId}")
-    public ResponseEntity<BoletaDTO> crear(@PathVariable long usuarioId, @RequestBody CrearBoletaRequest request) {
+    public ResponseEntity<BoletaDTO> crear(@PathVariable long usuarioId, @Valid @RequestBody CrearBoletaRequest request) {
         BoletaDTO creada = boletaService.crearBoleta(usuarioId, request);
-        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/boletas/{id}")
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/boletas/{id}")
                 .buildAndExpand(creada.getId()).toUri();
         return ResponseEntity.created(location).body(creada);
     }

@@ -1,6 +1,7 @@
 package com.pasteleriamilsabores.backend.service;
 
 import com.pasteleriamilsabores.backend.dto.ProductoDTO;
+import com.pasteleriamilsabores.backend.exception.BadRequestException;
 import com.pasteleriamilsabores.backend.exception.ResourceNotFoundException;
 import com.pasteleriamilsabores.backend.model.Categoria;
 import com.pasteleriamilsabores.backend.model.Producto;
@@ -48,7 +49,7 @@ public class ProductoService {
 
     public ProductoDTO crearProducto(ProductoDTO productoDTO) {
         if (productoDTO.getCategoriaId() == null) {
-            throw new ResourceNotFoundException("El ID de la categoría es obligatorio");
+            throw new BadRequestException("El ID de la categoría es obligatorio");
         }
         long categoriaId = productoDTO.getCategoriaId();
         Categoria categoria = categoriaRepository.findById(categoriaId)
@@ -81,7 +82,7 @@ public class ProductoService {
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
         if (productoDTO.getCategoriaId() == null) {
-            throw new ResourceNotFoundException("El ID de la categoría es obligatorio");
+            throw new BadRequestException("El ID de la categoría es obligatorio");
         }
         long categoriaId = productoDTO.getCategoriaId();
         Categoria categoria = categoriaRepository.findById(categoriaId)

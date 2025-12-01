@@ -4,6 +4,7 @@ import com.pasteleriamilsabores.backend.dto.CategoriaDTO;
 import com.pasteleriamilsabores.backend.service.CategoriaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +44,7 @@ public class CategoriaController {
 
     @Operation(summary = "Crear categoría", description = "Solo ADMIN")
     @PostMapping
-    public ResponseEntity<CategoriaDTO> crear(@RequestBody CategoriaDTO categoriaDTO) {
+    public ResponseEntity<CategoriaDTO> crear(@Valid @RequestBody CategoriaDTO categoriaDTO) {
         CategoriaDTO creada = categoriaService.crearCategoria(categoriaDTO);
         URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
                 .buildAndExpand(creada.getId()).toUri();
@@ -52,7 +53,7 @@ public class CategoriaController {
 
     @Operation(summary = "Actualizar categoría", description = "Solo ADMIN")
     @PutMapping("/{id}")
-    public ResponseEntity<CategoriaDTO> actualizar(@PathVariable long id, @RequestBody CategoriaDTO categoriaDTO) {
+    public ResponseEntity<CategoriaDTO> actualizar(@PathVariable long id, @Valid @RequestBody CategoriaDTO categoriaDTO) {
         CategoriaDTO actualizada = categoriaService.actualizarCategoria(id, categoriaDTO);
         return ResponseEntity.ok(actualizada);
     }

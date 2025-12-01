@@ -5,6 +5,7 @@ import com.pasteleriamilsabores.backend.service.FileStorageService;
 import com.pasteleriamilsabores.backend.service.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,7 @@ public class ProductoController {
     @Operation(summary = "Crear producto", description = "Solo ADMIN. Permite subir imagen")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductoDTO> crear(
-            @RequestPart("producto") ProductoDTO productoDTO,
+            @Valid @RequestPart("producto") ProductoDTO productoDTO,
             @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
 
         if (imagen != null && !imagen.isEmpty()) {
@@ -73,7 +74,7 @@ public class ProductoController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductoDTO> actualizar(
             @PathVariable long id,
-            @RequestPart("producto") ProductoDTO productoDTO,
+            @Valid @RequestPart("producto") ProductoDTO productoDTO,
             @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
 
         if (imagen != null && !imagen.isEmpty()) {

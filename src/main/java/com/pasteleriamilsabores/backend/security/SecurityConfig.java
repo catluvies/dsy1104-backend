@@ -70,11 +70,19 @@ public class SecurityConfig {
                         // - POST: Cliente (comprar) y Admin
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/boletas/**")
                         .hasAnyRole("ADMIN", "CLIENTE")
-                        // - PUT: Solo Admin (cambiar estados)
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/v1/boletas/**").hasRole("ADMIN")
+                        // - PATCH: Solo Admin (cambiar estados)
+                        .requestMatchers(org.springframework.http.HttpMethod.PATCH, "/api/v1/boletas/**")
+                        .hasRole("ADMIN")
+                        // - DELETE: Solo Admin
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/v1/boletas/**")
+                        .hasRole("ADMIN")
 
                         // Crear Vendedores: Solo Admin
                         .requestMatchers("/api/v1/auth/register/vendedor").hasRole("ADMIN")
+
+                        // Usuarios: Modificaciones solo ADMIN
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/v1/usuarios/**")
+                        .hasRole("ADMIN")
 
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

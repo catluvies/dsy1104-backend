@@ -1,8 +1,6 @@
 package com.pasteleriamilsabores.backend.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -13,8 +11,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Table(name = "detalle_boleta")
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class DetalleBoleta {
 
     @Id

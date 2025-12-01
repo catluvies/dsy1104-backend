@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/usuarios")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 @Tag(name = "Usuarios", description = "Gestión de usuarios")
 public class UsuarioController {
 
@@ -30,7 +30,16 @@ public class UsuarioController {
     @Operation(summary = "Obtener usuario por ID", description = "ADMIN o el propio usuario")
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') or authentication.principal.id == #id")
-    public ResponseEntity<UsuarioDTO> obtenerUsuario(@PathVariable Long id) {
+    public ResponseEntity<UsuarioDTO> obtenerUsuario(@PathVariable long id) {
         return ResponseEntity.ok(usuarioService.obtenerUsuarioPorId(id));
+    }
+
+    @Operation(summary = "Actualizar usuario", description = "Solo ADMIN puede cambiar rol y activo")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UsuarioDTO> actualizarUsuario(
+            @PathVariable long id,
+            @RequestBody UsuarioDTO usuarioDTO) {
+        return ResponseEntity.ok(usuarioService.actualizarUsuario(id, usuarioDTO));
     }
 }

@@ -34,19 +34,6 @@ public class AuthController {
         return ResponseEntity.ok(authService.register(request));
     }
 
-    @Operation(summary = "Registrar administrador", description = "Registra un nuevo usuario con rol ADMIN (requiere clave secreta)")
-    @PostMapping("/register/admin")
-    public ResponseEntity<?> registerAdmin(
-            @RequestHeader("X-Admin-Secret") String secret,
-            @Valid @RequestBody RegisterRequest request) {
-
-        if (!"MilSaboresAdmin2024".equals(secret)) {
-            return ResponseEntity.status(403).body("Acceso denegado: Clave de administrador incorrecta");
-        }
-
-        return ResponseEntity.ok(authService.registerAdmin(request));
-    }
-
     @Operation(summary = "Registrar vendedor", description = "Registra un nuevo usuario con rol VENDEDOR (solo ADMIN)")
     @PostMapping("/register/vendedor")
     public ResponseEntity<AuthResponse> registerVendedor(@Valid @RequestBody RegisterRequest request) {

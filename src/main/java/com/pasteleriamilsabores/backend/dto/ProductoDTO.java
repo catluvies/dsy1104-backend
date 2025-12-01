@@ -1,6 +1,10 @@
 package com.pasteleriamilsabores.backend.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,6 +21,8 @@ public class ProductoDTO {
     @Schema(description = "Código SKU único", example = "TORTA-001")
     private String sku;
 
+    @NotBlank(message = "El nombre es obligatorio")
+    @Size(min = 2, max = 150, message = "El nombre debe tener entre 2 y 150 caracteres")
     @Schema(description = "Nombre del producto", example = "Torta Selva Negra")
     private String nombre;
 
@@ -26,15 +32,19 @@ public class ProductoDTO {
     @Schema(description = "URL de la imagen", example = "/uploads/torta-selva-negra.jpg")
     private String imagenUrl;
 
+    @NotNull(message = "La categoría es obligatoria")
     @Schema(description = "ID de la categoría", example = "1")
     private Long categoriaId;
 
     @Schema(description = "Nombre de la categoría", accessMode = Schema.AccessMode.READ_ONLY)
     private String categoriaNombre;
 
+    @NotNull(message = "El precio es obligatorio")
+    @Min(value = 0, message = "El precio no puede ser negativo")
     @Schema(description = "Precio en pesos chilenos", example = "25000")
     private Double precio;
 
+    @Min(value = 0, message = "El stock no puede ser negativo")
     @Schema(description = "Cantidad disponible", example = "10")
     private Integer stock;
 
