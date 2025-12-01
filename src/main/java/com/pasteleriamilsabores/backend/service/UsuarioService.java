@@ -30,7 +30,22 @@ public class UsuarioService {
         return convertirADTO(usuario, true);
     }
 
-    public UsuarioDTO actualizarUsuario(long id, UsuarioDTO usuarioDTO) {
+    public UsuarioDTO actualizarPerfil(long id, UsuarioDTO usuarioDTO) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+        usuario.setNombre(usuarioDTO.getNombre());
+        usuario.setApellido(usuarioDTO.getApellido());
+        usuario.setTelefono(usuarioDTO.getTelefono());
+        usuario.setDireccion(usuarioDTO.getDireccion());
+        usuario.setComuna(usuarioDTO.getComuna());
+        usuario.setRegion(usuarioDTO.getRegion());
+
+        Usuario actualizado = usuarioRepository.save(usuario);
+        return convertirADTO(actualizado, false);
+    }
+
+    public UsuarioDTO actualizarUsuarioAdmin(long id, UsuarioDTO usuarioDTO) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
@@ -45,6 +60,13 @@ public class UsuarioService {
 
         Usuario actualizado = usuarioRepository.save(usuario);
         return convertirADTO(actualizado, false);
+    }
+
+    public void eliminarUsuario(long id) {
+        if (!usuarioRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Usuario no encontrado");
+        }
+        usuarioRepository.deleteById(id);
     }
 
     private UsuarioDTO convertirADTO(Usuario usuario, boolean cargarHistorial) {

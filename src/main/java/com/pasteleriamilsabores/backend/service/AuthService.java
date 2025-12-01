@@ -1,8 +1,10 @@
 package com.pasteleriamilsabores.backend.service;
 
 import com.pasteleriamilsabores.backend.dto.AuthResponse;
+import com.pasteleriamilsabores.backend.dto.CambiarPasswordRequest;
 import com.pasteleriamilsabores.backend.dto.LoginRequest;
 import com.pasteleriamilsabores.backend.dto.RegisterRequest;
+import com.pasteleriamilsabores.backend.exception.ResourceNotFoundException;
 import com.pasteleriamilsabores.backend.exception.BadRequestException;
 import com.pasteleriamilsabores.backend.model.Usuario;
 import com.pasteleriamilsabores.backend.repository.UsuarioRepository;
@@ -74,5 +76,17 @@ public class AuthService {
 
         return new AuthResponse(token, guardado.getId(), guardado.getNombre() + " " + guardado.getApellido(),
                 guardado.getEmail(), guardado.getRol());
+    }
+
+    public void cambiarPassword(long usuarioId, CambiarPasswordRequest request) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+        if (!passwordEncoder.matches(request.getPasswordActual(), usuario.getPassword())) {
+            throw new BadRequestException("La contraseña actual es incorrecta");
+        }
+
+        usuario.setPassword(passwordEncoder.encode(request.getPasswordNueva()));
+        usuarioRepository.save(usuario);
     }
 }

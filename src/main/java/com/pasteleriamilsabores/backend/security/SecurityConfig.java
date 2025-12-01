@@ -80,8 +80,17 @@ public class SecurityConfig {
                         // Crear Vendedores: Solo Admin
                         .requestMatchers("/api/v1/auth/register/vendedor").hasRole("ADMIN")
 
-                        // Usuarios: Modificaciones solo ADMIN
-                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/v1/usuarios/**")
+                        // Cambiar password: cualquier usuario autenticado
+                        .requestMatchers("/api/v1/auth/cambiar-password").authenticated()
+
+                        // Usuarios: perfil propio (cualquier autenticado) - validación en @PreAuthorize
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/v1/usuarios/*/perfil")
+                        .authenticated()
+
+                        // Usuarios: modificaciones admin (PUT sin /perfil, DELETE)
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/v1/usuarios/*")
+                        .hasRole("ADMIN")
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/v1/usuarios/**")
                         .hasRole("ADMIN")
 
                         .anyRequest().authenticated())

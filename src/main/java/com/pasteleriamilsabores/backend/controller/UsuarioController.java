@@ -34,12 +34,29 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.obtenerUsuarioPorId(id));
     }
 
-    @Operation(summary = "Actualizar usuario", description = "Solo ADMIN puede cambiar rol y activo")
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UsuarioDTO> actualizarUsuario(
+    @Operation(summary = "Actualizar perfil propio", description = "Usuario edita sus datos personales")
+    @PutMapping("/{id}/perfil")
+    @PreAuthorize("authentication.principal.id == #id")
+    public ResponseEntity<UsuarioDTO> actualizarPerfil(
             @PathVariable long id,
             @RequestBody UsuarioDTO usuarioDTO) {
-        return ResponseEntity.ok(usuarioService.actualizarUsuario(id, usuarioDTO));
+        return ResponseEntity.ok(usuarioService.actualizarPerfil(id, usuarioDTO));
+    }
+
+    @Operation(summary = "Actualizar usuario (Admin)", description = "ADMIN puede cambiar rol y activo")
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UsuarioDTO> actualizarUsuarioAdmin(
+            @PathVariable long id,
+            @RequestBody UsuarioDTO usuarioDTO) {
+        return ResponseEntity.ok(usuarioService.actualizarUsuarioAdmin(id, usuarioDTO));
+    }
+
+    @Operation(summary = "Eliminar usuario", description = "Solo ADMIN")
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> eliminarUsuario(@PathVariable long id) {
+        usuarioService.eliminarUsuario(id);
+        return ResponseEntity.noContent().build();
     }
 }

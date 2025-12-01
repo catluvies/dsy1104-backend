@@ -1,14 +1,17 @@
 package com.pasteleriamilsabores.backend.controller;
 
 import com.pasteleriamilsabores.backend.dto.AuthResponse;
+import com.pasteleriamilsabores.backend.dto.CambiarPasswordRequest;
 import com.pasteleriamilsabores.backend.dto.LoginRequest;
 import com.pasteleriamilsabores.backend.dto.RegisterRequest;
+import com.pasteleriamilsabores.backend.security.UsuarioPrincipal;
 import com.pasteleriamilsabores.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.RequiredArgsConstructor;
@@ -38,5 +41,15 @@ public class AuthController {
     @PostMapping("/register/vendedor")
     public ResponseEntity<AuthResponse> registerVendedor(@Valid @RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authService.registerVendedor(request));
+    }
+
+    @Operation(summary = "Cambiar contraseña", description = "Usuario autenticado cambia su propia contraseña")
+    @PostMapping("/cambiar-password")
+    public ResponseEntity<Void> cambiarPassword(
+            @Valid @RequestBody CambiarPasswordRequest request,
+            Authentication authentication) {
+        UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
+        authService.cambiarPassword(principal.getId(), request);
+        return ResponseEntity.ok().build();
     }
 }
