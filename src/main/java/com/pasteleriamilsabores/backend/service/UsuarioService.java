@@ -34,31 +34,14 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
 
-        // Actualizar solo campos editables (no email, password, rut)
-        if (usuarioDTO.getNombre() != null) {
-            usuario.setNombre(usuarioDTO.getNombre());
-        }
-        if (usuarioDTO.getApellido() != null) {
-            usuario.setApellido(usuarioDTO.getApellido());
-        }
-        if (usuarioDTO.getTelefono() != null) {
-            usuario.setTelefono(usuarioDTO.getTelefono());
-        }
-        if (usuarioDTO.getDireccion() != null) {
-            usuario.setDireccion(usuarioDTO.getDireccion());
-        }
-        if (usuarioDTO.getComuna() != null) {
-            usuario.setComuna(usuarioDTO.getComuna());
-        }
-        if (usuarioDTO.getRegion() != null) {
-            usuario.setRegion(usuarioDTO.getRegion());
-        }
-        if (usuarioDTO.getActivo() != null) {
-            usuario.setActivo(usuarioDTO.getActivo());
-        }
-        if (usuarioDTO.getRol() != null) {
-            usuario.setRol(usuarioDTO.getRol());
-        }
+        usuario.setNombre(usuarioDTO.getNombre());
+        usuario.setApellido(usuarioDTO.getApellido());
+        usuario.setTelefono(usuarioDTO.getTelefono());
+        usuario.setDireccion(usuarioDTO.getDireccion());
+        usuario.setComuna(usuarioDTO.getComuna());
+        usuario.setRegion(usuarioDTO.getRegion());
+        usuario.setActivo(usuarioDTO.getActivo());
+        usuario.setRol(usuarioDTO.getRol());
 
         Usuario actualizado = usuarioRepository.save(usuario);
         return convertirADTO(actualizado, false);
@@ -67,10 +50,7 @@ public class UsuarioService {
     private UsuarioDTO convertirADTO(Usuario usuario, boolean cargarHistorial) {
         int historialCompras = 0;
         if (cargarHistorial) {
-            Long usuarioId = usuario.getId();
-            if (usuarioId != null) {
-                historialCompras = boletaRepository.countByUsuarioId(usuarioId);
-            }
+            historialCompras = boletaRepository.countByUsuarioId(usuario.getId());
         }
 
         UsuarioDTO dto = new UsuarioDTO();
