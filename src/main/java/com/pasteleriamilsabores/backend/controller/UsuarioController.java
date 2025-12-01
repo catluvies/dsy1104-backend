@@ -4,6 +4,7 @@ import com.pasteleriamilsabores.backend.dto.UsuarioDTO;
 import com.pasteleriamilsabores.backend.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -58,5 +59,18 @@ public class UsuarioController {
     public ResponseEntity<Void> eliminarUsuario(@PathVariable long id) {
         usuarioService.eliminarUsuario(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Crear vendedor", description = "Solo ADMIN")
+    @PostMapping("/vendedor")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UsuarioDTO> crearVendedor(
+            @Valid @RequestBody com.pasteleriamilsabores.backend.dto.CrearVendedorRequest request) {
+        UsuarioDTO nuevoVendedor = usuarioService.crearVendedor(request);
+        java.net.URI location = org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(nuevoVendedor.getId())
+                .toUri();
+        return ResponseEntity.created(location).body(nuevoVendedor);
     }
 }

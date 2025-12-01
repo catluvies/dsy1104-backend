@@ -41,6 +41,9 @@ public class CategoriaService {
         categoria.setNombre(categoriaDTO.getNombre());
         categoria.setDescripcion(categoriaDTO.getDescripcion());
         categoria.setActiva(true);
+        if (categoriaDTO.getTiempoLimite() != null) {
+            categoria.setTiempoLimite(categoriaDTO.getTiempoLimite());
+        }
 
         Categoria guardada = categoriaRepository.save(categoria);
         return convertirADTO(guardada);
@@ -53,6 +56,9 @@ public class CategoriaService {
         categoria.setNombre(categoriaDTO.getNombre());
         categoria.setDescripcion(categoriaDTO.getDescripcion());
         categoria.setActiva(categoriaDTO.getActiva());
+        if (categoriaDTO.getTiempoLimite() != null) {
+            categoria.setTiempoLimite(categoriaDTO.getTiempoLimite());
+        }
 
         Categoria actualizada = categoriaRepository.save(categoria);
         return convertirADTO(actualizada);
@@ -70,6 +76,7 @@ public class CategoriaService {
                 categoria.getId(),
                 categoria.getNombre(),
                 categoria.getDescripcion(),
-                categoria.getActiva());
+                categoria.getActiva(),
+                categoria.getTiempoLimite());
     }
 }

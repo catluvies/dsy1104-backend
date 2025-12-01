@@ -50,8 +50,8 @@ public class BoletaDTO {
     @Schema(description = "Notas adicionales")
     private String notas;
 
-    @Schema(description = "Fecha de entrega solicitada", example = "2024-12-20")
-    private java.time.LocalDate fechaEntrega;
+    @Schema(description = "Fecha de entrega solicitada", example = "2024-12-20T15:00:00")
+    private java.time.LocalDateTime fechaEntrega;
 
     @Schema(description = "Estado de la boleta", example = "PENDIENTE")
     private String estado;

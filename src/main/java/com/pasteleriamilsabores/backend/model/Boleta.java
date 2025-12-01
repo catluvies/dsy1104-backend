@@ -29,6 +29,9 @@ public class Boleta {
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
 
+    @Column(name = "fecha_expiracion")
+    private LocalDateTime fechaExpiracion;
+
     @Column(nullable = false)
     private Double total;
 
@@ -54,7 +57,7 @@ public class Boleta {
     private String estado;
 
     @Column(name = "fecha_entrega")
-    private java.time.LocalDate fechaEntrega;
+    private java.time.LocalDateTime fechaEntrega;
 
     @OneToMany(mappedBy = "boleta", cascade = CascadeType.ALL)
     @JsonManagedReference

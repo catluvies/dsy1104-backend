@@ -28,6 +28,9 @@ public class Categoria {
     @Column(nullable = false)
     private Boolean activa;
 
+    @Column(name = "tiempo_limite", columnDefinition = "integer default 24")
+    private Integer tiempoLimite = 24; // Horas por defecto
+
     @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL)
     @JsonIgnore
     @ToString.Exclude

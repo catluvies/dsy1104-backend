@@ -20,4 +20,6 @@ public class CrearBoletaRequest {
     private Double costoEnvio;
     private String metodoPago;
     private String notasAdicionales;
+
+    private java.time.LocalDateTime fechaEntrega;
 }

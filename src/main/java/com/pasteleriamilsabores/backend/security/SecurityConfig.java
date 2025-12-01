@@ -85,10 +85,10 @@ public class SecurityConfig {
                                                 .requestMatchers(org.springframework.http.HttpMethod.POST,
                                                                 "/api/v1/boletas/**")
                                                 .hasAnyRole("ADMIN", "CLIENTE")
-                                                // - PATCH: Solo Admin (cambiar estados)
+                                                // - PATCH: Solo Admin y Vendedor (cambiar estados)
                                                 .requestMatchers(org.springframework.http.HttpMethod.PATCH,
                                                                 "/api/v1/boletas/**")
-                                                .hasRole("ADMIN")
+                                                .hasAnyRole("ADMIN", "VENDEDOR")
                                                 // - DELETE: Solo Admin
                                                 .requestMatchers(org.springframework.http.HttpMethod.DELETE,
                                                                 "/api/v1/boletas/**")

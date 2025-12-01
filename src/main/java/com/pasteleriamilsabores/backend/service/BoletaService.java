@@ -57,12 +57,44 @@ public class BoletaService {
         Boleta boleta = new Boleta();
         boleta.setUsuario(usuario);
         boleta.setEstado(AppConstants.ESTADO_PENDIENTE);
-        boleta.setDireccionEntrega(request.getDireccionEntrega());
-        boleta.setRegionEntrega(AppConstants.REGION_OPERACION);
-        boleta.setComunaEntrega(request.getComuna() != null ? request.getComuna() : "");
+        // 1. Validar Método de Pago
+        if (!AppConstants.METODO_PAGO_TRANSFERENCIA.equals(request.getMetodoPago()) &&
+                !AppConstants.METODO_PAGO_EFECTIVO.equals(request.getMetodoPago())) {
+            throw new BadRequestException("Método de pago no válido. Solo se acepta: " +
+                    AppConstants.METODO_PAGO_TRANSFERENCIA + " o " + AppConstants.METODO_PAGO_EFECTIVO);
+        }
         boleta.setMetodoPago(request.getMetodoPago());
+
+        // 2. Validar Comuna y Calcular Costo de Envío (Seguridad)
+        String comunaNormalizada = request.getComuna();
+
+        if (AppConstants.COMUNA_RETIRO.equalsIgnoreCase(comunaNormalizada)) {
+            // Caso: Retiro en Tienda
+            boleta.setCostoEnvio(0.0);
+            boleta.setComunaEntrega(AppConstants.COMUNA_RETIRO);
+            boleta.setDireccionEntrega(AppConstants.DIRECCION_TIENDA); // Forzamos la dirección de la tienda
+        } else {
+            // Caso: Despacho a Domicilio
+            if (!AppConstants.COSTOS_ENVIO.containsKey(comunaNormalizada)) {
+                throw new BadRequestException("Comuna no válida o fuera de zona de reparto: " + comunaNormalizada);
+            }
+            Double costoCalculado = AppConstants.COSTOS_ENVIO.get(comunaNormalizada);
+            boleta.setCostoEnvio(costoCalculado);
+            boleta.setComunaEntrega(comunaNormalizada);
+            boleta.setDireccionEntrega(request.getDireccionEntrega());
+        }
+
+        boleta.setRegionEntrega(AppConstants.REGION_OPERACION);
         boleta.setNotas(request.getNotasAdicionales());
-        boleta.setCostoEnvio(request.getCostoEnvio() != null ? request.getCostoEnvio() : 0.0);
+
+        // Validar Fecha de Entrega (Agendamiento Obligatorio)
+        if (request.getFechaEntrega() == null) {
+            throw new BadRequestException("La fecha y hora de entrega son obligatorias");
+        }
+        if (request.getFechaEntrega().isBefore(java.time.LocalDateTime.now())) {
+            throw new BadRequestException("La fecha de entrega no puede ser en el pasado");
+        }
+        boleta.setFechaEntrega(request.getFechaEntrega());
 
         double subtotal = 0.0;
         List<DetalleBoleta> detalles = new ArrayList<>();
@@ -93,6 +125,16 @@ public class BoletaService {
             subtotal += detalle.getSubtotal();
             detalles.add(detalle);
         }
+
+        // Calcular Fecha de Expiración Dinámica
+        int minTiempoLimite = 24; // Default 24 horas
+        for (DetalleBoleta detalle : detalles) {
+            Integer tiempoCat = detalle.getProducto().getCategoria().getTiempoLimite();
+            if (tiempoCat != null && tiempoCat < minTiempoLimite) {
+                minTiempoLimite = tiempoCat;
+            }
+        }
+        boleta.setFechaExpiracion(java.time.LocalDateTime.now().plusHours(minTiempoLimite));
 
         boleta.setSubtotal(subtotal);
         boleta.setTotal(subtotal + boleta.getCostoEnvio());

@@ -14,4 +14,6 @@ public interface BoletaRepository extends JpaRepository<Boleta, Long> {
     int countByUsuarioId(Long usuarioId);
 
     List<Boleta> findByEstado(String estado);
+
+    List<Boleta> findByEstadoAndFechaExpiracionBefore(String estado, java.time.LocalDateTime fecha);
 }

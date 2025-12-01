@@ -24,6 +24,9 @@ public class CategoriaDTO {
     @Schema(description = "Descripción de la categoría", example = "Tortas para celebraciones")
     private String descripcion;
 
-    @Schema(description = "Si la categoría está activa", example = "true")
+    @Schema(description = "Categoría activa o inactiva", example = "true")
     private Boolean activa;
+
+    @Schema(description = "Tiempo límite para pagar (horas)", example = "24")
+    private Integer tiempoLimite;
 }

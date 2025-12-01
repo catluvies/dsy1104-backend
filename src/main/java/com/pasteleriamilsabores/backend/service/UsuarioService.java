@@ -17,6 +17,32 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final BoletaRepository boletaRepository;
+    private final org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
+
+    public UsuarioDTO crearVendedor(com.pasteleriamilsabores.backend.dto.CrearVendedorRequest request) {
+        if (usuarioRepository.existsByEmail(request.getEmail())) {
+            throw new com.pasteleriamilsabores.backend.exception.BadRequestException("El email ya está registrado");
+        }
+        if (usuarioRepository.existsByRut(request.getRut())) {
+            throw new com.pasteleriamilsabores.backend.exception.BadRequestException("El RUT ya está registrado");
+        }
+
+        Usuario usuario = new Usuario();
+        usuario.setNombre(request.getNombre());
+        usuario.setApellido(request.getApellido());
+        usuario.setEmail(request.getEmail());
+        usuario.setPassword(passwordEncoder.encode(request.getPassword()));
+        usuario.setRut(request.getRut());
+        usuario.setTelefono(request.getTelefono());
+        usuario.setDireccion(request.getDireccion());
+        usuario.setComuna(request.getComuna());
+        usuario.setRegion(com.pasteleriamilsabores.backend.util.AppConstants.REGION_OPERACION);
+        usuario.setRol(com.pasteleriamilsabores.backend.util.AppConstants.ROLE_VENDEDOR);
+        usuario.setActivo(true);
+
+        Usuario guardado = usuarioRepository.save(usuario);
+        return convertirADTO(guardado, false);
+    }
 
     public List<UsuarioDTO> listarUsuarios() {
         return usuarioRepository.findAll().stream()
