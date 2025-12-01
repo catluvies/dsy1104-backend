@@ -35,10 +35,17 @@ public class BoletaController {
         return ResponseEntity.ok(boletaService.listarTodas());
     }
 
-    @Operation(summary = "Obtener boleta por ID")
+    @Operation(summary = "Obtener boleta por ID", description = "CLIENTE solo puede ver sus propias boletas")
     @GetMapping("/{id}")
-    public ResponseEntity<BoletaDTO> obtenerPorId(@PathVariable long id) {
-        return ResponseEntity.ok(boletaService.buscarPorId(id));
+    public ResponseEntity<BoletaDTO> obtenerPorId(@PathVariable long id, Authentication authentication) {
+        BoletaDTO boleta = boletaService.buscarPorId(id);
+        UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
+
+        if (principal.getRol().equals("ROLE_CLIENTE") && !principal.getId().equals(boleta.getUsuarioId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        return ResponseEntity.ok(boleta);
     }
 
     @Operation(summary = "Listar boletas de un usuario", description = "CLIENTE solo ve sus propias boletas")
@@ -56,9 +63,18 @@ public class BoletaController {
         return ResponseEntity.ok(boletaService.listarPorUsuario(usuarioId));
     }
 
-    @Operation(summary = "Crear boleta", description = "Crea una nueva boleta con sus detalles")
+    @Operation(summary = "Crear boleta", description = "CLIENTE solo puede crear boletas para sí mismo")
     @PostMapping("/usuario/{usuarioId}")
-    public ResponseEntity<BoletaDTO> crear(@PathVariable long usuarioId, @Valid @RequestBody CrearBoletaRequest request) {
+    public ResponseEntity<BoletaDTO> crear(
+            @PathVariable long usuarioId,
+            @Valid @RequestBody CrearBoletaRequest request,
+            Authentication authentication) {
+        UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
+
+        if (principal.getRol().equals("ROLE_CLIENTE") && !principal.getId().equals(usuarioId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         BoletaDTO creada = boletaService.crearBoleta(usuarioId, request);
         URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/boletas/{id}")
                 .buildAndExpand(creada.getId()).toUri();
