@@ -4,17 +4,23 @@ import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -115,9 +121,44 @@ public class SecurityConfig {
                                                 .hasRole("ADMIN")
 
                                                 .anyRequest().authenticated())
+                                .exceptionHandling(ex -> ex
+                                                .authenticationEntryPoint(authenticationEntryPoint())
+                                                .accessDeniedHandler(accessDeniedHandler()))
                                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
                 return http.build();
+        }
+
+        @Bean
+        public AuthenticationEntryPoint authenticationEntryPoint() {
+                return (request, response, authException) -> {
+                        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                        String json = new ObjectMapper().writeValueAsString(
+                                        java.util.Map.of(
+                                                        "timestamp", java.time.Instant.now().toString(),
+                                                        "status", 401,
+                                                        "error", "No autorizado",
+                                                        "mensaje", "Token no proporcionado o inválido. Debes iniciar sesión.",
+                                                        "path", request.getRequestURI()));
+                        response.getWriter().write(json);
+                };
+        }
+
+        @Bean
+        public AccessDeniedHandler accessDeniedHandler() {
+                return (request, response, accessDeniedException) -> {
+                        response.setStatus(HttpStatus.FORBIDDEN.value());
+                        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                        String json = new ObjectMapper().writeValueAsString(
+                                        java.util.Map.of(
+                                                        "timestamp", java.time.Instant.now().toString(),
+                                                        "status", 403,
+                                                        "error", "Acceso denegado",
+                                                        "mensaje", "No tienes permisos para acceder a este recurso. Se requiere rol de administrador.",
+                                                        "path", request.getRequestURI()));
+                        response.getWriter().write(json);
+                };
         }
 
         @Bean
