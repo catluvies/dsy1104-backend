@@ -48,13 +48,24 @@ public class Boleta {
 
     private Double costoEnvio;
 
-    private String metodoPago;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private com.pasteleriamilsabores.backend.model.enums.TipoEntrega tipoEntrega;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private com.pasteleriamilsabores.backend.model.enums.HorarioEntrega horarioEntrega;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private com.pasteleriamilsabores.backend.model.enums.MetodoPago metodoPago;
 
     @Column(columnDefinition = "TEXT")
     private String notas;
 
-    @Column(length = 50, nullable = false)
-    private String estado;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20, nullable = false)
+    private com.pasteleriamilsabores.backend.model.enums.EstadoBoleta estado;
 
     @Column(name = "fecha_entrega")
     private java.time.LocalDateTime fechaEntrega;

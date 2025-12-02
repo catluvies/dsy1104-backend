@@ -37,7 +37,7 @@ public class UsuarioService {
         usuario.setDireccion(request.getDireccion());
         usuario.setComuna(request.getComuna());
         usuario.setRegion(com.pasteleriamilsabores.backend.util.AppConstants.REGION_OPERACION);
-        usuario.setRol(com.pasteleriamilsabores.backend.util.AppConstants.ROLE_VENDEDOR);
+        usuario.setRol(com.pasteleriamilsabores.backend.model.enums.RolUsuario.ROLE_VENDEDOR);
         usuario.setActivo(true);
 
         Usuario guardado = usuarioRepository.save(usuario);

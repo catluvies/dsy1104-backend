@@ -2,6 +2,8 @@ package com.pasteleriamilsabores.backend.controller;
 
 import com.pasteleriamilsabores.backend.dto.BoletaDTO;
 import com.pasteleriamilsabores.backend.dto.CrearBoletaRequest;
+import com.pasteleriamilsabores.backend.model.enums.EstadoBoleta;
+import com.pasteleriamilsabores.backend.model.enums.RolUsuario;
 import com.pasteleriamilsabores.backend.security.UsuarioPrincipal;
 import com.pasteleriamilsabores.backend.service.BoletaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,7 +42,8 @@ public class BoletaController {
         BoletaDTO boleta = boletaService.buscarPorId(id);
         UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
 
-        if (principal.getRol().equals("ROLE_CLIENTE") && !principal.getId().equals(boleta.getUsuarioId())) {
+        if (principal.getRol().equals(RolUsuario.ROLE_CLIENTE.name())
+                && !principal.getId().equals(boleta.getUsuarioId())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -55,7 +58,7 @@ public class BoletaController {
         UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
         String rol = principal.getRol();
 
-        if (rol.equals("ROLE_CLIENTE") && !principal.getId().equals(usuarioId)) {
+        if (rol.equals(RolUsuario.ROLE_CLIENTE.name()) && !principal.getId().equals(usuarioId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -70,7 +73,7 @@ public class BoletaController {
             Authentication authentication) {
         UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
 
-        if (principal.getRol().equals("ROLE_CLIENTE") && !principal.getId().equals(usuarioId)) {
+        if (principal.getRol().equals(RolUsuario.ROLE_CLIENTE.name()) && !principal.getId().equals(usuarioId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -83,7 +86,8 @@ public class BoletaController {
     @Operation(summary = "Actualizar estado de boleta", description = "Solo ADMIN")
     @PatchMapping("/{id}/estado")
     public ResponseEntity<BoletaDTO> actualizarEstado(@PathVariable long id, @RequestBody Map<String, String> body) {
-        String nuevoEstado = body.get("estado");
+        String nuevoEstadoStr = body.get("estado");
+        EstadoBoleta nuevoEstado = EstadoBoleta.valueOf(nuevoEstadoStr);
         BoletaDTO actualizada = boletaService.actualizarEstado(id, nuevoEstado);
         return ResponseEntity.ok(actualizada);
     }

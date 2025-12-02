@@ -42,6 +42,12 @@ public class AuthController {
         return ResponseEntity.ok(authService.registerVendedor(request));
     }
 
+    @Operation(summary = "Registrar admin (TEMPORAL)", description = "Registra un nuevo usuario con rol ADMIN (Eliminar después de usar)")
+    @PostMapping("/register/admin")
+    public ResponseEntity<AuthResponse> registerAdmin(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authService.registerAdmin(request));
+    }
+
     @Operation(summary = "Cambiar contraseña", description = "Usuario autenticado cambia su propia contraseña")
     @PostMapping("/cambiar-password")
     public ResponseEntity<Void> cambiarPassword(

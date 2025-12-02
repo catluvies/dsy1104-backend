@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.List;
 
 @Entity
@@ -45,14 +44,22 @@ public class Producto {
     @Column(columnDefinition = "TEXT")
     private String ingredientes;
 
-    private String formatoVenta;
+    private Double cantidadMedida;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private com.pasteleriamilsabores.backend.model.enums.UnidadMedida unidadMedida;
+
     private Integer porciones;
-    private String peso;
-    private String duracion;
-    private String tiempoPreparacion;
+
+    private Integer duracionDias;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private com.pasteleriamilsabores.backend.model.enums.CondicionConservacion condicionConservacion;
 
     @Column(length = 500)
-    private String notas;
+    private String alergenos;
 
     @Column(nullable = false)
     private Boolean activo;

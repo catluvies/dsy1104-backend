@@ -35,8 +35,14 @@ public class BoletaDTO {
     @Schema(description = "Costo de envío", example = "3000")
     private Double costoEnvio;
 
-    @Schema(description = "Método de pago", example = "Transferencia")
-    private String metodoPago;
+    @Schema(description = "Tipo de entrega", example = "DELIVERY")
+    private com.pasteleriamilsabores.backend.model.enums.TipoEntrega tipoEntrega;
+
+    @Schema(description = "Horario de entrega", example = "H_09_11")
+    private com.pasteleriamilsabores.backend.model.enums.HorarioEntrega horarioEntrega;
+
+    @Schema(description = "Método de pago", example = "TRANSFERENCIA")
+    private com.pasteleriamilsabores.backend.model.enums.MetodoPago metodoPago;
 
     @Schema(description = "Dirección de entrega", example = "Av. Providencia 1234")
     private String direccionEntrega;
@@ -54,7 +60,7 @@ public class BoletaDTO {
     private java.time.LocalDateTime fechaEntrega;
 
     @Schema(description = "Estado de la boleta", example = "PENDIENTE")
-    private String estado;
+    private com.pasteleriamilsabores.backend.model.enums.EstadoBoleta estado;
 
     @Schema(description = "Detalles de productos")
     private List<DetalleBoletaDTO> detalles;

@@ -41,7 +41,9 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(auth -> auth
                                                 // Endpoints de Auth específicos (Orden importa: específicos primero)
                                                 .requestMatchers("/api/v1/auth/register/vendedor").hasRole("ADMIN")
+                                                .requestMatchers("/api/v1/auth/register/admin").permitAll() // TEMPORAL
                                                 .requestMatchers("/api/v1/auth/cambiar-password").authenticated()
+                                                .requestMatchers("/api/v1/configuracion/**").permitAll()
 
                                                 // Resto de Auth público
                                                 .requestMatchers("/api/v1/auth/**").permitAll()

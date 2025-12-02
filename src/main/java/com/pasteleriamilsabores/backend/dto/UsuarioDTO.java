@@ -22,7 +22,7 @@ public class UsuarioDTO {
     private String email;
 
     @Schema(description = "Rol del usuario", example = "ROLE_CLIENTE")
-    private String rol;
+    private com.pasteleriamilsabores.backend.model.enums.RolUsuario rol;
 
     @Schema(description = "RUT chileno", example = "12345678-9")
     private String rut;

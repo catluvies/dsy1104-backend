@@ -7,6 +7,7 @@ import com.pasteleriamilsabores.backend.dto.RegisterRequest;
 import com.pasteleriamilsabores.backend.exception.ResourceNotFoundException;
 import com.pasteleriamilsabores.backend.exception.BadRequestException;
 import com.pasteleriamilsabores.backend.model.Usuario;
+import com.pasteleriamilsabores.backend.model.enums.RolUsuario;
 import com.pasteleriamilsabores.backend.repository.UsuarioRepository;
 import com.pasteleriamilsabores.backend.security.JwtUtil;
 import com.pasteleriamilsabores.backend.util.AppConstants;
@@ -34,25 +35,25 @@ public class AuthService {
             throw new BadRequestException("Credenciales inválidas");
         }
 
-        String token = jwtUtil.generarToken(usuario.getEmail(), usuario.getRol(), usuario.getId());
+        String token = jwtUtil.generarToken(usuario.getEmail(), usuario.getRol().name(), usuario.getId());
 
         return new AuthResponse(token, usuario.getId(), usuario.getNombre() + " " + usuario.getApellido(),
                 usuario.getEmail(), usuario.getRol());
     }
 
     public AuthResponse register(RegisterRequest request) {
-        return crearUsuarioBase(request, "ROLE_CLIENTE");
+        return crearUsuarioBase(request, RolUsuario.ROLE_CLIENTE);
     }
 
     public AuthResponse registerAdmin(RegisterRequest request) {
-        return crearUsuarioBase(request, "ROLE_ADMIN");
+        return crearUsuarioBase(request, RolUsuario.ROLE_ADMIN);
     }
 
     public AuthResponse registerVendedor(RegisterRequest request) {
-        return crearUsuarioBase(request, "ROLE_VENDEDOR");
+        return crearUsuarioBase(request, RolUsuario.ROLE_VENDEDOR);
     }
 
-    private AuthResponse crearUsuarioBase(RegisterRequest request, String rol) {
+    private AuthResponse crearUsuarioBase(RegisterRequest request, RolUsuario rol) {
         if (usuarioRepository.existsByEmail(request.getEmail())) {
             throw new BadRequestException("El email ya está registrado");
         }
@@ -72,7 +73,7 @@ public class AuthService {
 
         Usuario guardado = usuarioRepository.save(usuario);
 
-        String token = jwtUtil.generarToken(guardado.getEmail(), guardado.getRol(), guardado.getId());
+        String token = jwtUtil.generarToken(guardado.getEmail(), guardado.getRol().name(), guardado.getId());
 
         return new AuthResponse(token, guardado.getId(), guardado.getNombre() + " " + guardado.getApellido(),
                 guardado.getEmail(), guardado.getRol());

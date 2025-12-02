@@ -7,6 +7,8 @@ import com.pasteleriamilsabores.backend.model.Boleta;
 import com.pasteleriamilsabores.backend.model.DetalleBoleta;
 import com.pasteleriamilsabores.backend.model.Producto;
 import com.pasteleriamilsabores.backend.model.Usuario;
+import com.pasteleriamilsabores.backend.model.enums.EstadoBoleta;
+import com.pasteleriamilsabores.backend.model.enums.TipoEntrega;
 import com.pasteleriamilsabores.backend.repository.BoletaRepository;
 import com.pasteleriamilsabores.backend.repository.ProductoRepository;
 import com.pasteleriamilsabores.backend.repository.UsuarioRepository;
@@ -56,25 +58,20 @@ public class BoletaService {
 
         Boleta boleta = new Boleta();
         boleta.setUsuario(usuario);
-        boleta.setEstado(AppConstants.ESTADO_PENDIENTE);
-        // 1. Validar Método de Pago
-        if (!AppConstants.METODO_PAGO_TRANSFERENCIA.equals(request.getMetodoPago()) &&
-                !AppConstants.METODO_PAGO_EFECTIVO.equals(request.getMetodoPago())) {
-            throw new BadRequestException("Método de pago no válido. Solo se acepta: " +
-                    AppConstants.METODO_PAGO_TRANSFERENCIA + " o " + AppConstants.METODO_PAGO_EFECTIVO);
-        }
+        boleta.setEstado(EstadoBoleta.PENDIENTE);
         boleta.setMetodoPago(request.getMetodoPago());
+        boleta.setTipoEntrega(request.getTipoEntrega());
+        boleta.setHorarioEntrega(request.getHorarioEntrega());
 
-        // 2. Validar Comuna y Calcular Costo de Envío (Seguridad)
-        String comunaNormalizada = request.getComuna();
-
-        if (AppConstants.COMUNA_RETIRO.equalsIgnoreCase(comunaNormalizada)) {
+        // Validar Comuna y Calcular Costo de Envío
+        if (request.getTipoEntrega() == TipoEntrega.RETIRO) {
             // Caso: Retiro en Tienda
             boleta.setCostoEnvio(0.0);
             boleta.setComunaEntrega(AppConstants.COMUNA_RETIRO);
-            boleta.setDireccionEntrega(AppConstants.DIRECCION_TIENDA); // Forzamos la dirección de la tienda
+            boleta.setDireccionEntrega(AppConstants.DIRECCION_TIENDA);
         } else {
             // Caso: Despacho a Domicilio
+            String comunaNormalizada = request.getComuna();
             if (!AppConstants.COSTOS_ENVIO.containsKey(comunaNormalizada)) {
                 throw new BadRequestException("Comuna no válida o fuera de zona de reparto: " + comunaNormalizada);
             }
@@ -126,15 +123,8 @@ public class BoletaService {
             detalles.add(detalle);
         }
 
-        // Calcular Fecha de Expiración Dinámica
-        int minTiempoLimite = 24; // Default 24 horas
-        for (DetalleBoleta detalle : detalles) {
-            Integer tiempoCat = detalle.getProducto().getCategoria().getTiempoLimite();
-            if (tiempoCat != null && tiempoCat < minTiempoLimite) {
-                minTiempoLimite = tiempoCat;
-            }
-        }
-        boleta.setFechaExpiracion(java.time.LocalDateTime.now().plusHours(minTiempoLimite));
+        // Calcular Fecha de Expiración (45 minutos fijo)
+        boleta.setFechaExpiracion(java.time.LocalDateTime.now().plusMinutes(45));
 
         boleta.setSubtotal(subtotal);
         boleta.setTotal(subtotal + boleta.getCostoEnvio());
@@ -144,7 +134,7 @@ public class BoletaService {
         return convertirADTO(guardada);
     }
 
-    public BoletaDTO actualizarEstado(long id, String nuevoEstado) {
+    public BoletaDTO actualizarEstado(long id, EstadoBoleta nuevoEstado) {
         Boleta boleta = boletaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Boleta no encontrada"));
 
@@ -179,6 +169,8 @@ public class BoletaService {
                 boleta.getTotal(),
                 boleta.getSubtotal(),
                 boleta.getCostoEnvio(),
+                boleta.getTipoEntrega(),
+                boleta.getHorarioEntrega(),
                 boleta.getMetodoPago(),
                 boleta.getDireccionEntrega(),
                 boleta.getComunaEntrega(),

@@ -3,9 +3,9 @@ package com.pasteleriamilsabores.backend.service;
 import com.pasteleriamilsabores.backend.model.Boleta;
 import com.pasteleriamilsabores.backend.model.DetalleBoleta;
 import com.pasteleriamilsabores.backend.model.Producto;
+import com.pasteleriamilsabores.backend.model.enums.EstadoBoleta;
 import com.pasteleriamilsabores.backend.repository.BoletaRepository;
 import com.pasteleriamilsabores.backend.repository.ProductoRepository;
-import com.pasteleriamilsabores.backend.util.AppConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -33,7 +33,7 @@ public class BoletaCleanupService {
         LocalDateTime ahora = LocalDateTime.now();
 
         List<Boleta> boletasVencidas = boletaRepository.findByEstadoAndFechaExpiracionBefore(
-                AppConstants.ESTADO_PENDIENTE, ahora);
+                EstadoBoleta.PENDIENTE, ahora);
 
         for (Boleta boleta : boletasVencidas) {
             log.info("Cancelando boleta ID: {} por falta de pago (creada: {})", boleta.getId(),
@@ -48,7 +48,7 @@ public class BoletaCleanupService {
             }
 
             // 2. Cambiar estado a CANCELADA
-            boleta.setEstado(AppConstants.ESTADO_CANCELADA);
+            boleta.setEstado(EstadoBoleta.CANCELADA);
             boleta.setNotas(boleta.getNotas() + " [AUTO-CANCELADA: Expiró tiempo de pago]");
             boletaRepository.save(boleta);
         }

@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import com.pasteleriamilsabores.backend.model.enums.UnidadMedida;
+import com.pasteleriamilsabores.backend.model.enums.CondicionConservacion;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -51,23 +53,23 @@ public class ProductoDTO {
     @Schema(description = "Lista de ingredientes")
     private String ingredientes;
 
-    @Schema(description = "Formato de venta", example = "Unidad")
-    private String formatoVenta;
+    @Schema(description = "Cantidad de medida", example = "350")
+    private Double cantidadMedida;
+
+    @Schema(description = "Unidad de medida", example = "ML")
+    private UnidadMedida unidadMedida;
 
     @Schema(description = "Cantidad de porciones", example = "12")
     private Integer porciones;
 
-    @Schema(description = "Peso del producto", example = "1.5 kg")
-    private String peso;
+    @Schema(description = "Duración en días", example = "3")
+    private Integer duracionDias;
 
-    @Schema(description = "Tiempo de duración", example = "3 días refrigerado")
-    private String duracion;
+    @Schema(description = "Condición de conservación", example = "REFRIGERADO")
+    private CondicionConservacion condicionConservacion;
 
-    @Schema(description = "Tiempo de preparación", example = "24 horas")
-    private String tiempoPreparacion;
-
-    @Schema(description = "Notas adicionales o alérgenos")
-    private String notas;
+    @Schema(description = "Alérgenos", example = "Gluten, Leche, Huevos")
+    private String alergenos;
 
     @Schema(description = "Si el producto está activo", example = "true")
     private Boolean activo;

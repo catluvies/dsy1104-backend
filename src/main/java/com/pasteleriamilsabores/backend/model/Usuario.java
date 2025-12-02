@@ -34,8 +34,9 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private String rol;
+    private com.pasteleriamilsabores.backend.model.enums.RolUsuario rol;
 
     @Column(nullable = false, length = 12)
     private String rut;

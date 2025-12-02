@@ -64,13 +64,12 @@ public class ProductoService {
         producto.setPrecio(productoDTO.getPrecio());
         producto.setStock(productoDTO.getStock());
         producto.setIngredientes(productoDTO.getIngredientes());
-        producto.setFormatoVenta(productoDTO.getFormatoVenta());
+        producto.setCantidadMedida(productoDTO.getCantidadMedida());
+        producto.setUnidadMedida(productoDTO.getUnidadMedida());
         producto.setPorciones(productoDTO.getPorciones());
-        producto.setPeso(productoDTO.getPeso());
-        producto.setDuracion(productoDTO.getDuracion());
-        producto.setTiempoPreparacion(productoDTO.getTiempoPreparacion());
-
-        producto.setNotas(productoDTO.getNotas());
+        producto.setDuracionDias(productoDTO.getDuracionDias());
+        producto.setCondicionConservacion(productoDTO.getCondicionConservacion());
+        producto.setAlergenos(productoDTO.getAlergenos());
         producto.setActivo(true);
 
         Producto guardado = productoRepository.save(producto);
@@ -96,13 +95,12 @@ public class ProductoService {
         producto.setPrecio(productoDTO.getPrecio());
         producto.setStock(productoDTO.getStock());
         producto.setIngredientes(productoDTO.getIngredientes());
-        producto.setFormatoVenta(productoDTO.getFormatoVenta());
+        producto.setCantidadMedida(productoDTO.getCantidadMedida());
+        producto.setUnidadMedida(productoDTO.getUnidadMedida());
         producto.setPorciones(productoDTO.getPorciones());
-        producto.setPeso(productoDTO.getPeso());
-        producto.setDuracion(productoDTO.getDuracion());
-        producto.setTiempoPreparacion(productoDTO.getTiempoPreparacion());
-
-        producto.setNotas(productoDTO.getNotas());
+        producto.setDuracionDias(productoDTO.getDuracionDias());
+        producto.setCondicionConservacion(productoDTO.getCondicionConservacion());
+        producto.setAlergenos(productoDTO.getAlergenos());
         producto.setActivo(productoDTO.getActivo());
 
         Producto actualizado = productoRepository.save(producto);
@@ -128,13 +126,12 @@ public class ProductoService {
                 producto.getPrecio(),
                 producto.getStock(),
                 producto.getIngredientes(),
-                producto.getFormatoVenta(),
+                producto.getCantidadMedida(),
+                producto.getUnidadMedida(),
                 producto.getPorciones(),
-                producto.getPeso(),
-                producto.getDuracion(),
-                producto.getTiempoPreparacion(),
-
-                producto.getNotas(),
+                producto.getDuracionDias(),
+                producto.getCondicionConservacion(),
+                producto.getAlergenos(),
                 producto.getActivo());
     }
 }
