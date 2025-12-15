@@ -90,7 +90,10 @@ public class ProductoService {
         producto.setSku(productoDTO.getSku());
         producto.setNombre(productoDTO.getNombre());
         producto.setDescripcion(productoDTO.getDescripcion());
-        producto.setImagenUrl(productoDTO.getImagenUrl());
+        // Solo actualizar imagen si se envía una nueva (preservar existente si es null)
+        if (productoDTO.getImagenUrl() != null) {
+            producto.setImagenUrl(productoDTO.getImagenUrl());
+        }
         producto.setCategoria(categoria);
         producto.setPrecio(productoDTO.getPrecio());
         producto.setStock(productoDTO.getStock());
