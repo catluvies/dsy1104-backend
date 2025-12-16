@@ -119,10 +119,10 @@ public class BoletaController {
     @PostMapping(value = "/{id}/comprobante", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<BoletaDTO> subirComprobante(
             @PathVariable long id,
-            @RequestPart("archivo") MultipartFile archivo,
+            @RequestPart("comprobante") MultipartFile comprobante,
             Authentication authentication) {
         UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
-        BoletaDTO actualizada = boletaService.subirComprobante(id, principal.getId(), archivo);
+        BoletaDTO actualizada = boletaService.subirComprobante(id, principal.getId(), comprobante);
         return ResponseEntity.ok(actualizada);
     }
 
