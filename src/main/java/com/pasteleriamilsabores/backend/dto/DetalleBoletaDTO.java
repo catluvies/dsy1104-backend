@@ -1,5 +1,6 @@
 package com.pasteleriamilsabores.backend.dto;
 
+import com.pasteleriamilsabores.backend.model.enums.UnidadMedida;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,13 +22,16 @@ public class DetalleBoletaDTO {
     @Schema(description = "ID de la variante (opcional)", example = "1")
     private Long varianteId;
 
-    @Schema(description = "Nombre de la variante", example = "Para 15 personas", accessMode = Schema.AccessMode.READ_ONLY)
+    @Schema(description = "Nombre de la variante (generado)", example = "Para 15 personas", accessMode = Schema.AccessMode.READ_ONLY)
     private String varianteNombre;
 
-    @Schema(description = "Porciones de la variante", example = "15", accessMode = Schema.AccessMode.READ_ONLY)
-    private Integer variantePorciones;
+    @Schema(description = "Cantidad de la variante", example = "15", accessMode = Schema.AccessMode.READ_ONLY)
+    private Integer varianteCantidad;
 
-    @Schema(description = "Cantidad", example = "2")
+    @Schema(description = "Unidad de medida de la variante", example = "PORCION", accessMode = Schema.AccessMode.READ_ONLY)
+    private UnidadMedida varianteUnidadMedida;
+
+    @Schema(description = "Cantidad comprada", example = "2")
     private Integer cantidad;
 
     @Schema(description = "Precio unitario al momento de la compra", example = "25000")

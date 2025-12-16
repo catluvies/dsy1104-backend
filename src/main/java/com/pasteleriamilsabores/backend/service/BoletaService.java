@@ -139,7 +139,7 @@ public class BoletaService {
 
                 precioUnitario = variante.getPrecio();
                 stockDisponible = variante.getStock();
-                nombreItem = producto.getNombre() + " - " + variante.getNombre();
+                nombreItem = producto.getNombre() + " - " + variante.getNombreDisplay();
             } else {
                 // Sin variante: usar producto base
                 precioUnitario = producto.getPrecio();
@@ -314,8 +314,9 @@ public class BoletaService {
                     // Incluir info de variante si existe
                     if (detalle.getVariante() != null) {
                         dto.setVarianteId(detalle.getVariante().getId());
-                        dto.setVarianteNombre(detalle.getVariante().getNombre());
-                        dto.setVariantePorciones(detalle.getVariante().getPorciones());
+                        dto.setVarianteNombre(detalle.getVariante().getNombreDisplay());
+                        dto.setVarianteCantidad(detalle.getVariante().getCantidad());
+                        dto.setVarianteUnidadMedida(detalle.getVariante().getUnidadMedida());
                     }
 
                     return dto;

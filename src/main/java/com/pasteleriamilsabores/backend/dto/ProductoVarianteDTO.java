@@ -1,10 +1,9 @@
 package com.pasteleriamilsabores.backend.dto;
 
+import com.pasteleriamilsabores.backend.model.enums.UnidadMedida;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,15 +20,17 @@ public class ProductoVarianteDTO {
     @Schema(description = "ID del producto al que pertenece", example = "1")
     private Long productoId;
 
-    @NotBlank(message = "El nombre es obligatorio")
-    @Size(min = 2, max = 100, message = "El nombre debe tener entre 2 y 100 caracteres")
-    @Schema(description = "Nombre descriptivo de la variante", example = "Para 15 personas")
-    private String nombre;
+    @NotNull(message = "La cantidad es obligatoria")
+    @Min(value = 1, message = "Debe tener al menos 1")
+    @Schema(description = "Cantidad (ej: 12 para 12 personas, 750 para 750ml)", example = "12")
+    private Integer cantidad;
 
-    @NotNull(message = "Las porciones son obligatorias")
-    @Min(value = 1, message = "Debe tener al menos 1 porción")
-    @Schema(description = "Cantidad de porciones", example = "15")
-    private Integer porciones;
+    @NotNull(message = "La unidad de medida es obligatoria")
+    @Schema(description = "Unidad de medida", example = "PORCION")
+    private UnidadMedida unidadMedida;
+
+    @Schema(description = "Nombre generado para mostrar (solo lectura)", example = "Para 12 personas", accessMode = Schema.AccessMode.READ_ONLY)
+    private String nombreDisplay;
 
     @NotNull(message = "El precio es obligatorio")
     @Min(value = 0, message = "El precio no puede ser negativo")

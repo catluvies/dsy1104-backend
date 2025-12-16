@@ -49,8 +49,8 @@ public class ProductoVarianteService {
 
         ProductoVariante variante = new ProductoVariante();
         variante.setProducto(producto);
-        variante.setNombre(dto.getNombre());
-        variante.setPorciones(dto.getPorciones());
+        variante.setCantidad(dto.getCantidad());
+        variante.setUnidadMedida(dto.getUnidadMedida());
         variante.setPrecio(dto.getPrecio());
         variante.setStock(dto.getStock());
         variante.setActivo(true);
@@ -63,8 +63,8 @@ public class ProductoVarianteService {
         ProductoVariante variante = varianteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Variante no encontrada"));
 
-        variante.setNombre(dto.getNombre());
-        variante.setPorciones(dto.getPorciones());
+        variante.setCantidad(dto.getCantidad());
+        variante.setUnidadMedida(dto.getUnidadMedida());
         variante.setPrecio(dto.getPrecio());
         variante.setStock(dto.getStock());
         if (dto.getActivo() != null) {
@@ -86,8 +86,9 @@ public class ProductoVarianteService {
         ProductoVarianteDTO dto = new ProductoVarianteDTO();
         dto.setId(variante.getId());
         dto.setProductoId(variante.getProducto().getId());
-        dto.setNombre(variante.getNombre());
-        dto.setPorciones(variante.getPorciones());
+        dto.setCantidad(variante.getCantidad());
+        dto.setUnidadMedida(variante.getUnidadMedida());
+        dto.setNombreDisplay(variante.getNombreDisplay());
         dto.setPrecio(variante.getPrecio());
         dto.setStock(variante.getStock());
         dto.setActivo(variante.getActivo());

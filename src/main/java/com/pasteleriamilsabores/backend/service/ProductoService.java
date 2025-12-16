@@ -155,8 +155,9 @@ public class ProductoService {
         return new ProductoVarianteDTO(
                 variante.getId(),
                 variante.getProducto().getId(),
-                variante.getNombre(),
-                variante.getPorciones(),
+                variante.getCantidad(),
+                variante.getUnidadMedida(),
+                variante.getNombreDisplay(),
                 variante.getPrecio(),
                 variante.getStock(),
                 variante.getActivo());
