@@ -1,11 +1,11 @@
 package com.pasteleriamilsabores.backend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pasteleriamilsabores.backend.dto.CategoriaDTO;
 import com.pasteleriamilsabores.backend.service.CategoriaService;
 import com.pasteleriamilsabores.backend.service.FileStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +26,7 @@ public class CategoriaController {
 
     private final CategoriaService categoriaService;
     private final FileStorageService fileStorageService;
+    private final ObjectMapper objectMapper;
 
     @Operation(summary = "Listar todas las categorías")
     @GetMapping
@@ -48,8 +49,10 @@ public class CategoriaController {
     @Operation(summary = "Crear categoría", description = "Solo ADMIN. Permite subir imagen")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CategoriaDTO> crear(
-            @Valid @RequestPart("categoria") CategoriaDTO categoriaDTO,
-            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+            @RequestPart("categoria") String categoriaJson,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) throws Exception {
+
+        CategoriaDTO categoriaDTO = objectMapper.readValue(categoriaJson, CategoriaDTO.class);
 
         if (imagen != null && !imagen.isEmpty()) {
             String fileName = fileStorageService.storeFile(imagen);
@@ -67,8 +70,10 @@ public class CategoriaController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CategoriaDTO> actualizar(
             @PathVariable long id,
-            @Valid @RequestPart("categoria") CategoriaDTO categoriaDTO,
-            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+            @RequestPart("categoria") String categoriaJson,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) throws Exception {
+
+        CategoriaDTO categoriaDTO = objectMapper.readValue(categoriaJson, CategoriaDTO.class);
 
         if (imagen != null && !imagen.isEmpty()) {
             String fileName = fileStorageService.storeFile(imagen);
