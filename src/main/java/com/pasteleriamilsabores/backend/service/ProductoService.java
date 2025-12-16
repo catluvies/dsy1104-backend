@@ -33,13 +33,15 @@ public class ProductoService {
     }
 
     public List<ProductoDTO> listarActivos() {
-        return productoRepository.findByActivoTrue().stream()
+        // Solo productos activos cuya categoría también esté activa
+        return productoRepository.findByActivoTrueAndCategoriaActivaTrue().stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
 
     public List<ProductoDTO> listarPorCategoria(long categoriaId) {
-        return productoRepository.findByCategoriaId(categoriaId).stream()
+        // Solo productos activos de la categoría
+        return productoRepository.findByCategoriaIdAndActivoTrue(categoriaId).stream()
                 .map(this::convertirADTO)
                 .collect(Collectors.toList());
     }
