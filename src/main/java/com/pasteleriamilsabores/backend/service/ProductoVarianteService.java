@@ -19,7 +19,7 @@ public class ProductoVarianteService {
     private final ProductoVarianteRepository varianteRepository;
     private final ProductoRepository productoRepository;
 
-    public List<ProductoVarianteDTO> listarPorProducto(Long productoId) {
+    public List<ProductoVarianteDTO> listarPorProducto(long productoId) {
         if (!productoRepository.existsById(productoId)) {
             throw new ResourceNotFoundException("Producto no encontrado");
         }
@@ -28,7 +28,7 @@ public class ProductoVarianteService {
                 .collect(Collectors.toList());
     }
 
-    public List<ProductoVarianteDTO> listarActivasPorProducto(Long productoId) {
+    public List<ProductoVarianteDTO> listarActivasPorProducto(long productoId) {
         if (!productoRepository.existsById(productoId)) {
             throw new ResourceNotFoundException("Producto no encontrado");
         }
@@ -37,13 +37,13 @@ public class ProductoVarianteService {
                 .collect(Collectors.toList());
     }
 
-    public ProductoVarianteDTO buscarPorId(Long id) {
+    public ProductoVarianteDTO buscarPorId(long id) {
         ProductoVariante variante = varianteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Variante no encontrada"));
         return convertirADTO(variante);
     }
 
-    public ProductoVarianteDTO crearVariante(Long productoId, ProductoVarianteDTO dto) {
+    public ProductoVarianteDTO crearVariante(long productoId, ProductoVarianteDTO dto) {
         Producto producto = productoRepository.findById(productoId)
                 .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
@@ -59,7 +59,7 @@ public class ProductoVarianteService {
         return convertirADTO(guardada);
     }
 
-    public ProductoVarianteDTO actualizarVariante(Long id, ProductoVarianteDTO dto) {
+    public ProductoVarianteDTO actualizarVariante(long id, ProductoVarianteDTO dto) {
         ProductoVariante variante = varianteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Variante no encontrada"));
 
@@ -75,7 +75,7 @@ public class ProductoVarianteService {
         return convertirADTO(actualizada);
     }
 
-    public void eliminarVariante(Long id) {
+    public void eliminarVariante(long id) {
         if (!varianteRepository.existsById(id)) {
             throw new ResourceNotFoundException("Variante no encontrada");
         }

@@ -15,3 +15,8 @@ CREATE TABLE producto_variantes (
 
 -- Índice para buscar variantes por producto
 CREATE INDEX idx_variante_producto ON producto_variantes(producto_id);
+
+-- Agregar campo variante_id a detalle_boleta (opcional, para soportar compras con variantes)
+ALTER TABLE detalle_boleta ADD COLUMN variante_id BIGINT;
+ALTER TABLE detalle_boleta ADD CONSTRAINT fk_detalle_variante
+    FOREIGN KEY (variante_id) REFERENCES producto_variantes(id) ON DELETE SET NULL;

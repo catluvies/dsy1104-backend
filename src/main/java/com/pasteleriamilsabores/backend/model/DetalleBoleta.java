@@ -28,6 +28,10 @@ public class DetalleBoleta {
     @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
 
+    @ManyToOne
+    @JoinColumn(name = "variante_id")
+    private ProductoVariante variante;
+
     @Column(nullable = false)
     private Integer cantidad;
 

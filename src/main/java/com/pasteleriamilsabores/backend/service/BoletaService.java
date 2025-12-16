@@ -6,12 +6,14 @@ import com.pasteleriamilsabores.backend.exception.ResourceNotFoundException;
 import com.pasteleriamilsabores.backend.model.Boleta;
 import com.pasteleriamilsabores.backend.model.DetalleBoleta;
 import com.pasteleriamilsabores.backend.model.Producto;
+import com.pasteleriamilsabores.backend.model.ProductoVariante;
 import com.pasteleriamilsabores.backend.model.Usuario;
 import com.pasteleriamilsabores.backend.model.enums.EstadoBoleta;
 import com.pasteleriamilsabores.backend.model.enums.TipoEntrega;
 import com.pasteleriamilsabores.backend.model.enums.TipoNotificacion;
 import com.pasteleriamilsabores.backend.repository.BoletaRepository;
 import com.pasteleriamilsabores.backend.repository.ProductoRepository;
+import com.pasteleriamilsabores.backend.repository.ProductoVarianteRepository;
 import com.pasteleriamilsabores.backend.repository.UsuarioRepository;
 import com.pasteleriamilsabores.backend.util.AppConstants;
 
@@ -34,6 +36,8 @@ public class BoletaService {
     private final UsuarioRepository usuarioRepository;
 
     private final ProductoRepository productoRepository;
+
+    private final ProductoVarianteRepository varianteRepository;
 
     private final FileStorageService fileStorageService;
 
@@ -111,19 +115,58 @@ public class BoletaService {
             Producto producto = productoRepository.findById(productoId)
                     .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
-            if (producto.getStock() < detalleRequest.getCantidad()) {
-                throw new BadRequestException("Stock insuficiente para el producto: " + producto.getNombre());
+            ProductoVariante variante = null;
+            Double precioUnitario;
+            Integer stockDisponible;
+            String nombreItem;
+
+            // Si se especifica una variante, usarla
+            if (detalleRequest.getVarianteId() != null) {
+                long varianteId = detalleRequest.getVarianteId();
+                variante = varianteRepository.findById(varianteId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Variante no encontrada"));
+
+                // Validar que la variante pertenezca al producto
+                if (!variante.getProducto().getId().equals(productoId)) {
+                    throw new BadRequestException("La variante no pertenece al producto especificado");
+                }
+
+                // Validar que la variante esté activa
+                if (!variante.getActivo()) {
+                    throw new BadRequestException("La variante seleccionada no está disponible");
+                }
+
+                precioUnitario = variante.getPrecio();
+                stockDisponible = variante.getStock();
+                nombreItem = producto.getNombre() + " - " + variante.getNombre();
+            } else {
+                // Sin variante: usar producto base
+                precioUnitario = producto.getPrecio();
+                stockDisponible = producto.getStock();
+                nombreItem = producto.getNombre();
             }
 
-            producto.setStock(producto.getStock() - detalleRequest.getCantidad());
-            productoRepository.save(producto);
+            // Validar stock
+            if (stockDisponible < detalleRequest.getCantidad()) {
+                throw new BadRequestException("Stock insuficiente para: " + nombreItem);
+            }
+
+            // Descontar stock
+            if (variante != null) {
+                variante.setStock(variante.getStock() - detalleRequest.getCantidad());
+                varianteRepository.save(variante);
+            } else {
+                producto.setStock(producto.getStock() - detalleRequest.getCantidad());
+                productoRepository.save(producto);
+            }
 
             DetalleBoleta detalle = new DetalleBoleta();
             detalle.setBoleta(boleta);
             detalle.setProducto(producto);
+            detalle.setVariante(variante);
             detalle.setCantidad(detalleRequest.getCantidad());
-            detalle.setPrecioUnitario(producto.getPrecio());
-            detalle.setSubtotal(detalleRequest.getCantidad() * producto.getPrecio());
+            detalle.setPrecioUnitario(precioUnitario);
+            detalle.setSubtotal(detalleRequest.getCantidad() * precioUnitario);
 
             subtotal += detalle.getSubtotal();
             detalles.add(detalle);
@@ -237,13 +280,24 @@ public class BoletaService {
 
     private BoletaDTO convertirADTO(Boleta boleta) {
         List<DetalleBoletaDTO> detallesDTO = boleta.getDetalles().stream()
-                .map(detalle -> new DetalleBoletaDTO(
-                        detalle.getId(),
-                        detalle.getProducto().getId(),
-                        detalle.getProducto().getNombre(),
-                        detalle.getCantidad(),
-                        detalle.getPrecioUnitario(),
-                        detalle.getSubtotal()))
+                .map(detalle -> {
+                    DetalleBoletaDTO dto = new DetalleBoletaDTO();
+                    dto.setId(detalle.getId());
+                    dto.setProductoId(detalle.getProducto().getId());
+                    dto.setProductoNombre(detalle.getProducto().getNombre());
+                    dto.setCantidad(detalle.getCantidad());
+                    dto.setPrecioUnitario(detalle.getPrecioUnitario());
+                    dto.setSubtotal(detalle.getSubtotal());
+
+                    // Incluir info de variante si existe
+                    if (detalle.getVariante() != null) {
+                        dto.setVarianteId(detalle.getVariante().getId());
+                        dto.setVarianteNombre(detalle.getVariante().getNombre());
+                        dto.setVariantePorciones(detalle.getVariante().getPorciones());
+                    }
+
+                    return dto;
+                })
                 .collect(Collectors.toList());
 
         BoletaDTO dto = new BoletaDTO();

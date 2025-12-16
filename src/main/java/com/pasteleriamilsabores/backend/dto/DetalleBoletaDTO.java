@@ -1,12 +1,10 @@
 package com.pasteleriamilsabores.backend.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "Detalle de un producto en la boleta")
 public class DetalleBoletaDTO {
@@ -19,6 +17,15 @@ public class DetalleBoletaDTO {
 
     @Schema(description = "Nombre del producto", accessMode = Schema.AccessMode.READ_ONLY)
     private String productoNombre;
+
+    @Schema(description = "ID de la variante (opcional)", example = "1")
+    private Long varianteId;
+
+    @Schema(description = "Nombre de la variante", example = "Para 15 personas", accessMode = Schema.AccessMode.READ_ONLY)
+    private String varianteNombre;
+
+    @Schema(description = "Porciones de la variante", example = "15", accessMode = Schema.AccessMode.READ_ONLY)
+    private Integer variantePorciones;
 
     @Schema(description = "Cantidad", example = "2")
     private Integer cantidad;

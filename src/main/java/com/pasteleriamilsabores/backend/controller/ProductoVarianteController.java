@@ -23,26 +23,26 @@ public class ProductoVarianteController {
 
     @Operation(summary = "Listar variantes de un producto")
     @GetMapping("/productos/{productoId}/variantes")
-    public ResponseEntity<List<ProductoVarianteDTO>> listarPorProducto(@PathVariable Long productoId) {
+    public ResponseEntity<List<ProductoVarianteDTO>> listarPorProducto(@PathVariable long productoId) {
         return ResponseEntity.ok(varianteService.listarPorProducto(productoId));
     }
 
     @Operation(summary = "Listar variantes activas de un producto")
     @GetMapping("/productos/{productoId}/variantes/activas")
-    public ResponseEntity<List<ProductoVarianteDTO>> listarActivasPorProducto(@PathVariable Long productoId) {
+    public ResponseEntity<List<ProductoVarianteDTO>> listarActivasPorProducto(@PathVariable long productoId) {
         return ResponseEntity.ok(varianteService.listarActivasPorProducto(productoId));
     }
 
     @Operation(summary = "Obtener variante por ID")
     @GetMapping("/variantes/{id}")
-    public ResponseEntity<ProductoVarianteDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<ProductoVarianteDTO> obtenerPorId(@PathVariable long id) {
         return ResponseEntity.ok(varianteService.buscarPorId(id));
     }
 
     @Operation(summary = "Crear variante de producto", description = "Solo ADMIN")
     @PostMapping("/productos/{productoId}/variantes")
     public ResponseEntity<ProductoVarianteDTO> crear(
-            @PathVariable Long productoId,
+            @PathVariable long productoId,
             @Valid @RequestBody ProductoVarianteDTO varianteDTO) {
         ProductoVarianteDTO creada = varianteService.crearVariante(productoId, varianteDTO);
         URI location = ServletUriComponentsBuilder.fromCurrentContextPath()
@@ -55,14 +55,14 @@ public class ProductoVarianteController {
     @Operation(summary = "Actualizar variante", description = "Solo ADMIN")
     @PutMapping("/variantes/{id}")
     public ResponseEntity<ProductoVarianteDTO> actualizar(
-            @PathVariable Long id,
+            @PathVariable long id,
             @Valid @RequestBody ProductoVarianteDTO varianteDTO) {
         return ResponseEntity.ok(varianteService.actualizarVariante(id, varianteDTO));
     }
 
     @Operation(summary = "Eliminar variante", description = "Solo ADMIN")
     @DeleteMapping("/variantes/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable long id) {
         varianteService.eliminarVariante(id);
         return ResponseEntity.noContent().build();
     }
