@@ -1,15 +1,18 @@
 package com.pasteleriamilsabores.backend.service;
 
 import com.pasteleriamilsabores.backend.dto.ProductoDTO;
+import com.pasteleriamilsabores.backend.dto.ProductoVarianteDTO;
 import com.pasteleriamilsabores.backend.exception.BadRequestException;
 import com.pasteleriamilsabores.backend.exception.ResourceNotFoundException;
 import com.pasteleriamilsabores.backend.model.Categoria;
 import com.pasteleriamilsabores.backend.model.Producto;
+import com.pasteleriamilsabores.backend.model.ProductoVariante;
 import com.pasteleriamilsabores.backend.repository.CategoriaRepository;
 import com.pasteleriamilsabores.backend.repository.ProductoRepository;
 
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -118,6 +121,13 @@ public class ProductoService {
     }
 
     private ProductoDTO convertirADTO(Producto producto) {
+        List<ProductoVarianteDTO> variantesDTO = producto.getVariantes() != null
+                ? producto.getVariantes().stream()
+                        .filter(ProductoVariante::getActivo)
+                        .map(this::convertirVarianteADTO)
+                        .collect(Collectors.toList())
+                : Collections.emptyList();
+
         return new ProductoDTO(
                 producto.getId(),
                 producto.getSku(),
@@ -135,6 +145,18 @@ public class ProductoService {
                 producto.getDuracionDias(),
                 producto.getCondicionConservacion(),
                 producto.getAlergenos(),
-                producto.getActivo());
+                producto.getActivo(),
+                variantesDTO);
+    }
+
+    private ProductoVarianteDTO convertirVarianteADTO(ProductoVariante variante) {
+        return new ProductoVarianteDTO(
+                variante.getId(),
+                variante.getProducto().getId(),
+                variante.getNombre(),
+                variante.getPorciones(),
+                variante.getPrecio(),
+                variante.getStock(),
+                variante.getActivo());
     }
 }

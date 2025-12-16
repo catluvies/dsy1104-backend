@@ -11,6 +11,8 @@ import com.pasteleriamilsabores.backend.model.enums.UnidadMedida;
 import com.pasteleriamilsabores.backend.model.enums.CondicionConservacion;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -73,4 +75,7 @@ public class ProductoDTO {
 
     @Schema(description = "Si el producto está activo", example = "true")
     private Boolean activo;
+
+    @Schema(description = "Variantes/tamaños disponibles del producto")
+    private List<ProductoVarianteDTO> variantes;
 }
