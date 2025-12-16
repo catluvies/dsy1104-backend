@@ -114,6 +114,7 @@ public class UsuarioService {
         dto.setRegion(usuario.getRegion());
         dto.setActivo(usuario.getActivo());
         dto.setHistorialCompras(historialCompras);
+        dto.setFechaCreacion(usuario.getFechaCreacion());
 
         return dto;
     }

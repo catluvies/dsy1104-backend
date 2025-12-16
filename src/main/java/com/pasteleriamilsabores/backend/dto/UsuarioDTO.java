@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @Schema(description = "Datos de un usuario")
@@ -44,4 +46,7 @@ public class UsuarioDTO {
 
     @Schema(description = "Cantidad de compras realizadas", accessMode = Schema.AccessMode.READ_ONLY)
     private Integer historialCompras;
+
+    @Schema(description = "Fecha de registro del usuario", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime fechaCreacion;
 }
