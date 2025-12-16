@@ -64,4 +64,10 @@ public class BoletaDTO {
 
     @Schema(description = "Detalles de productos")
     private List<DetalleBoletaDTO> detalles;
+
+    @Schema(description = "URL del comprobante de transferencia", accessMode = Schema.AccessMode.READ_ONLY)
+    private String comprobanteUrl;
+
+    @Schema(description = "Fecha de subida del comprobante", accessMode = Schema.AccessMode.READ_ONLY)
+    private LocalDateTime fechaComprobante;
 }

@@ -8,7 +8,7 @@ public final class AppConstants {
 
     public static final String REGION_OPERACION = "Región Metropolitana";
 
-    public static final int TIEMPO_PAGO_MINUTOS = 45;
+    public static final int TIEMPO_PAGO_MINUTOS = 120; // 2 horas para transferencia
 
     public static final String COMUNA_RETIRO = "RETIRO EN TIENDA";
     public static final String DIRECCION_TIENDA = "Av. Providencia 1234, Local 10 (Pastelería Mil Sabores)";

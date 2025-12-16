@@ -75,4 +75,10 @@ public class Boleta {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<DetalleBoleta> detalles;
+
+    @Column(name = "comprobante_url")
+    private String comprobanteUrl;
+
+    @Column(name = "fecha_comprobante")
+    private LocalDateTime fechaComprobante;
 }

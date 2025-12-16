@@ -11,9 +11,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -89,6 +91,17 @@ public class BoletaController {
         String nuevoEstadoStr = body.get("estado");
         EstadoBoleta nuevoEstado = EstadoBoleta.valueOf(nuevoEstadoStr);
         BoletaDTO actualizada = boletaService.actualizarEstado(id, nuevoEstado);
+        return ResponseEntity.ok(actualizada);
+    }
+
+    @Operation(summary = "Subir comprobante de transferencia", description = "CLIENTE sube comprobante de pago")
+    @PostMapping(value = "/{id}/comprobante", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BoletaDTO> subirComprobante(
+            @PathVariable long id,
+            @RequestPart("archivo") MultipartFile archivo,
+            Authentication authentication) {
+        UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
+        BoletaDTO actualizada = boletaService.subirComprobante(id, principal.getId(), archivo);
         return ResponseEntity.ok(actualizada);
     }
 

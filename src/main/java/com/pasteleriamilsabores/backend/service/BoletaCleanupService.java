@@ -4,6 +4,7 @@ import com.pasteleriamilsabores.backend.model.Boleta;
 import com.pasteleriamilsabores.backend.model.DetalleBoleta;
 import com.pasteleriamilsabores.backend.model.Producto;
 import com.pasteleriamilsabores.backend.model.enums.EstadoBoleta;
+import com.pasteleriamilsabores.backend.model.enums.TipoNotificacion;
 import com.pasteleriamilsabores.backend.repository.BoletaRepository;
 import com.pasteleriamilsabores.backend.repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class BoletaCleanupService {
 
     private final BoletaRepository boletaRepository;
     private final ProductoRepository productoRepository;
+    private final NotificacionService notificacionService;
 
     // Se ejecuta cada hora (3600000 ms)
     @Scheduled(fixedRate = 3600000)
@@ -49,8 +51,18 @@ public class BoletaCleanupService {
 
             // 2. Cambiar estado a CANCELADA
             boleta.setEstado(EstadoBoleta.CANCELADA);
-            boleta.setNotas(boleta.getNotas() + " [AUTO-CANCELADA: Expiró tiempo de pago]");
+            String notasActuales = boleta.getNotas() != null ? boleta.getNotas() : "";
+            boleta.setNotas(notasActuales + " [AUTO-CANCELADA: Expiró tiempo de pago]");
             boletaRepository.save(boleta);
+
+            // 3. Notificar al cliente
+            notificacionService.crearNotificacion(
+                    boleta.getUsuario().getId(),
+                    "Pedido cancelado",
+                    "Tu pedido #" + boleta.getId() + " ha sido cancelado automáticamente por expiración del tiempo de pago.",
+                    TipoNotificacion.ADVERTENCIA,
+                    boleta.getId()
+            );
         }
 
         if (!boletasVencidas.isEmpty()) {

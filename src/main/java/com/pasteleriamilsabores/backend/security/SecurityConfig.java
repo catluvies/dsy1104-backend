@@ -120,6 +120,9 @@ public class SecurityConfig {
                                                                 "/api/v1/usuarios/**")
                                                 .hasRole("ADMIN")
 
+                                                // Notificaciones: cualquier usuario autenticado
+                                                .requestMatchers("/api/v1/notificaciones/**").authenticated()
+
                                                 .anyRequest().authenticated())
                                 .exceptionHandling(ex -> ex
                                                 .authenticationEntryPoint(authenticationEntryPoint())

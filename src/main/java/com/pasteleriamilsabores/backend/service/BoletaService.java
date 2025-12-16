@@ -9,6 +9,7 @@ import com.pasteleriamilsabores.backend.model.Producto;
 import com.pasteleriamilsabores.backend.model.Usuario;
 import com.pasteleriamilsabores.backend.model.enums.EstadoBoleta;
 import com.pasteleriamilsabores.backend.model.enums.TipoEntrega;
+import com.pasteleriamilsabores.backend.model.enums.TipoNotificacion;
 import com.pasteleriamilsabores.backend.repository.BoletaRepository;
 import com.pasteleriamilsabores.backend.repository.ProductoRepository;
 import com.pasteleriamilsabores.backend.repository.UsuarioRepository;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +34,10 @@ public class BoletaService {
     private final UsuarioRepository usuarioRepository;
 
     private final ProductoRepository productoRepository;
+
+    private final FileStorageService fileStorageService;
+
+    private final NotificacionService notificacionService;
 
     public List<BoletaDTO> listarTodas() {
         return boletaRepository.findAll().stream()
@@ -123,8 +129,8 @@ public class BoletaService {
             detalles.add(detalle);
         }
 
-        // Calcular Fecha de Expiración (45 minutos fijo)
-        boleta.setFechaExpiracion(java.time.LocalDateTime.now().plusMinutes(45));
+        // Calcular Fecha de Expiración
+        boleta.setFechaExpiracion(java.time.LocalDateTime.now().plusMinutes(AppConstants.TIEMPO_PAGO_MINUTOS));
 
         boleta.setSubtotal(subtotal);
         boleta.setTotal(subtotal + boleta.getCostoEnvio());
@@ -134,13 +140,60 @@ public class BoletaService {
         return convertirADTO(guardada);
     }
 
+    @Transactional
     public BoletaDTO actualizarEstado(long id, EstadoBoleta nuevoEstado) {
         Boleta boleta = boletaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Boleta no encontrada"));
 
+        EstadoBoleta estadoAnterior = boleta.getEstado();
         boleta.setEstado(nuevoEstado);
         Boleta actualizada = boletaRepository.save(boleta);
+
+        // Crear notificación para el cliente
+        if (estadoAnterior != nuevoEstado) {
+            String titulo = obtenerTituloNotificacion(nuevoEstado);
+            String mensaje = obtenerMensajeNotificacion(nuevoEstado, boleta.getId());
+            TipoNotificacion tipo = obtenerTipoNotificacion(nuevoEstado);
+            notificacionService.crearNotificacion(
+                    boleta.getUsuario().getId(),
+                    titulo,
+                    mensaje,
+                    tipo,
+                    boleta.getId()
+            );
+        }
+
         return convertirADTO(actualizada);
+    }
+
+    private String obtenerTituloNotificacion(EstadoBoleta estado) {
+        return switch (estado) {
+            case CONFIRMADA -> "Pedido confirmado";
+            case PREPARANDO -> "Pedido en preparación";
+            case LISTA -> "Pedido listo";
+            case ENTREGADA -> "Pedido entregado";
+            case CANCELADA -> "Pedido cancelado";
+            default -> "Actualización de pedido";
+        };
+    }
+
+    private String obtenerMensajeNotificacion(EstadoBoleta estado, Long boletaId) {
+        return switch (estado) {
+            case CONFIRMADA -> "Tu pedido #" + boletaId + " ha sido confirmado. Pronto comenzaremos a prepararlo.";
+            case PREPARANDO -> "Tu pedido #" + boletaId + " está siendo preparado con mucho cariño.";
+            case LISTA -> "Tu pedido #" + boletaId + " está listo para ser entregado/retirado.";
+            case ENTREGADA -> "Tu pedido #" + boletaId + " ha sido entregado. ¡Gracias por tu compra!";
+            case CANCELADA -> "Tu pedido #" + boletaId + " ha sido cancelado.";
+            default -> "El estado de tu pedido #" + boletaId + " ha sido actualizado.";
+        };
+    }
+
+    private TipoNotificacion obtenerTipoNotificacion(EstadoBoleta estado) {
+        return switch (estado) {
+            case CONFIRMADA, PREPARANDO, LISTA, ENTREGADA -> TipoNotificacion.EXITO;
+            case CANCELADA -> TipoNotificacion.ADVERTENCIA;
+            default -> TipoNotificacion.INFO;
+        };
     }
 
     public void eliminarBoleta(long id) {
@@ -148,6 +201,38 @@ public class BoletaService {
             throw new ResourceNotFoundException("Boleta no encontrada");
         }
         boletaRepository.deleteById(id);
+    }
+
+    @Transactional
+    public BoletaDTO subirComprobante(long boletaId, long usuarioId, MultipartFile archivo) {
+        Boleta boleta = boletaRepository.findById(boletaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Boleta no encontrada"));
+
+        // Validar que la boleta pertenezca al usuario
+        if (!boleta.getUsuario().getId().equals(usuarioId)) {
+            throw new BadRequestException("No tienes permiso para subir comprobante a esta boleta");
+        }
+
+        // Validar que el estado sea PENDIENTE
+        if (boleta.getEstado() != EstadoBoleta.PENDIENTE) {
+            throw new BadRequestException("Solo se puede subir comprobante a boletas en estado PENDIENTE");
+        }
+
+        // Validar que el método de pago sea TRANSFERENCIA
+        if (boleta.getMetodoPago() != com.pasteleriamilsabores.backend.model.enums.MetodoPago.TRANSFERENCIA) {
+            throw new BadRequestException("Solo se requiere comprobante para pagos por transferencia");
+        }
+
+        // Guardar el archivo
+        String fileName = fileStorageService.storeFile(archivo);
+        String fileUrl = "/uploads/" + fileName;
+
+        // Actualizar la boleta
+        boleta.setComprobanteUrl(fileUrl);
+        boleta.setFechaComprobante(java.time.LocalDateTime.now());
+
+        Boleta actualizada = boletaRepository.save(boleta);
+        return convertirADTO(actualizada);
     }
 
     private BoletaDTO convertirADTO(Boleta boleta) {
@@ -161,23 +246,26 @@ public class BoletaService {
                         detalle.getSubtotal()))
                 .collect(Collectors.toList());
 
-        return new BoletaDTO(
-                boleta.getId(),
-                boleta.getUsuario().getId(),
-                boleta.getUsuario().getNombre() + " " + boleta.getUsuario().getApellido(),
-                boleta.getFechaCreacion(),
-                boleta.getTotal(),
-                boleta.getSubtotal(),
-                boleta.getCostoEnvio(),
-                boleta.getTipoEntrega(),
-                boleta.getHorarioEntrega(),
-                boleta.getMetodoPago(),
-                boleta.getDireccionEntrega(),
-                boleta.getComunaEntrega(),
-                boleta.getRegionEntrega(),
-                boleta.getNotas(),
-                boleta.getFechaEntrega(),
-                boleta.getEstado(),
-                detallesDTO);
+        BoletaDTO dto = new BoletaDTO();
+        dto.setId(boleta.getId());
+        dto.setUsuarioId(boleta.getUsuario().getId());
+        dto.setUsuarioNombre(boleta.getUsuario().getNombre() + " " + boleta.getUsuario().getApellido());
+        dto.setFechaCreacion(boleta.getFechaCreacion());
+        dto.setTotal(boleta.getTotal());
+        dto.setSubtotal(boleta.getSubtotal());
+        dto.setCostoEnvio(boleta.getCostoEnvio());
+        dto.setTipoEntrega(boleta.getTipoEntrega());
+        dto.setHorarioEntrega(boleta.getHorarioEntrega());
+        dto.setMetodoPago(boleta.getMetodoPago());
+        dto.setDireccionEntrega(boleta.getDireccionEntrega());
+        dto.setComunaEntrega(boleta.getComunaEntrega());
+        dto.setRegionEntrega(boleta.getRegionEntrega());
+        dto.setNotas(boleta.getNotas());
+        dto.setFechaEntrega(boleta.getFechaEntrega());
+        dto.setEstado(boleta.getEstado());
+        dto.setDetalles(detallesDTO);
+        dto.setComprobanteUrl(boleta.getComprobanteUrl());
+        dto.setFechaComprobante(boleta.getFechaComprobante());
+        return dto;
     }
 }
