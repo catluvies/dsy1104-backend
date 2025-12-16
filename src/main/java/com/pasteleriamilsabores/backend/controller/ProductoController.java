@@ -1,11 +1,11 @@
 package com.pasteleriamilsabores.backend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pasteleriamilsabores.backend.dto.ProductoDTO;
 import com.pasteleriamilsabores.backend.service.FileStorageService;
 import com.pasteleriamilsabores.backend.service.ProductoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +26,7 @@ public class ProductoController {
 
     private final ProductoService productoService;
     private final FileStorageService fileStorageService;
+    private final ObjectMapper objectMapper;
 
     @Operation(summary = "Listar todos los productos")
     @GetMapping
@@ -54,8 +55,10 @@ public class ProductoController {
     @Operation(summary = "Crear producto", description = "Solo ADMIN. Permite subir imagen")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductoDTO> crear(
-            @Valid @RequestPart("producto") ProductoDTO productoDTO,
-            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+            @RequestPart("producto") String productoJson,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) throws Exception {
+
+        ProductoDTO productoDTO = objectMapper.readValue(productoJson, ProductoDTO.class);
 
         if (imagen != null && !imagen.isEmpty()) {
             String fileName = fileStorageService.storeFile(imagen);
@@ -73,8 +76,10 @@ public class ProductoController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductoDTO> actualizar(
             @PathVariable long id,
-            @Valid @RequestPart("producto") ProductoDTO productoDTO,
-            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+            @RequestPart("producto") String productoJson,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) throws Exception {
+
+        ProductoDTO productoDTO = objectMapper.readValue(productoJson, ProductoDTO.class);
 
         if (imagen != null && !imagen.isEmpty()) {
             String fileName = fileStorageService.storeFile(imagen);

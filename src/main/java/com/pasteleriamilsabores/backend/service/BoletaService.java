@@ -20,6 +20,7 @@ import com.pasteleriamilsabores.backend.util.AppConstants;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -98,7 +99,7 @@ public class BoletaService {
         if (request.getFechaEntrega() == null) {
             throw new BadRequestException("La fecha y hora de entrega son obligatorias");
         }
-        if (request.getFechaEntrega().isBefore(java.time.LocalDateTime.now())) {
+        if (request.getFechaEntrega().isBefore(LocalDateTime.now())) {
             throw new BadRequestException("La fecha de entrega no puede ser en el pasado");
         }
         boleta.setFechaEntrega(request.getFechaEntrega());
@@ -173,7 +174,7 @@ public class BoletaService {
         }
 
         // Calcular Fecha de Expiración
-        boleta.setFechaExpiracion(java.time.LocalDateTime.now().plusMinutes(AppConstants.TIEMPO_PAGO_MINUTOS));
+        boleta.setFechaExpiracion(LocalDateTime.now().plusMinutes(AppConstants.TIEMPO_PAGO_MINUTOS));
 
         boleta.setSubtotal(subtotal);
         boleta.setTotal(subtotal + boleta.getCostoEnvio());
@@ -181,6 +182,27 @@ public class BoletaService {
 
         Boleta guardada = boletaRepository.save(boleta);
         return convertirADTO(guardada);
+    }
+
+    @Transactional
+    public BoletaDTO crearBoletaConComprobante(long usuarioId, CrearBoletaRequest request, MultipartFile comprobante) {
+        BoletaDTO boletaCreada = crearBoleta(usuarioId, request);
+
+        if (comprobante != null && !comprobante.isEmpty()) {
+            long boletaId = boletaCreada.getId();
+            Boleta boleta = boletaRepository.findById(boletaId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Boleta no encontrada"));
+
+            String fileName = fileStorageService.storeFile(comprobante);
+            String fileUrl = "/uploads/" + fileName;
+            boleta.setComprobanteUrl(fileUrl);
+            boleta.setFechaComprobante(LocalDateTime.now());
+
+            Boleta actualizada = boletaRepository.save(boleta);
+            return convertirADTO(actualizada);
+        }
+
+        return boletaCreada;
     }
 
     @Transactional
@@ -272,7 +294,7 @@ public class BoletaService {
 
         // Actualizar la boleta
         boleta.setComprobanteUrl(fileUrl);
-        boleta.setFechaComprobante(java.time.LocalDateTime.now());
+        boleta.setFechaComprobante(LocalDateTime.now());
 
         Boleta actualizada = boletaRepository.save(boleta);
         return convertirADTO(actualizada);

@@ -1,5 +1,6 @@
 package com.pasteleriamilsabores.backend.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pasteleriamilsabores.backend.dto.BoletaDTO;
 import com.pasteleriamilsabores.backend.dto.CrearBoletaRequest;
 import com.pasteleriamilsabores.backend.model.enums.EstadoBoleta;
@@ -8,7 +9,6 @@ import com.pasteleriamilsabores.backend.security.UsuarioPrincipal;
 import com.pasteleriamilsabores.backend.service.BoletaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class BoletaController {
 
     private final BoletaService boletaService;
+    private final ObjectMapper objectMapper;
 
     @Operation(summary = "Listar todas las boletas", description = "Solo ADMIN y VENDEDOR")
     @GetMapping
@@ -67,11 +68,31 @@ public class BoletaController {
         return ResponseEntity.ok(boletaService.listarPorUsuario(usuarioId));
     }
 
-    @Operation(summary = "Crear boleta", description = "CLIENTE solo puede crear boletas para sí mismo")
-    @PostMapping("/usuario/{usuarioId}")
+    @Operation(summary = "Crear boleta con comprobante", description = "CLIENTE puede crear boleta con comprobante adjunto")
+    @PostMapping(value = "/usuario/{usuarioId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<BoletaDTO> crearConComprobante(
+            @PathVariable long usuarioId,
+            @RequestPart("boleta") String boletaJson,
+            @RequestPart(value = "comprobante", required = false) MultipartFile comprobante,
+            Authentication authentication) throws Exception {
+        UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
+
+        if (principal.getRol().equals(RolUsuario.ROLE_CLIENTE.name()) && !principal.getId().equals(usuarioId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        CrearBoletaRequest request = objectMapper.readValue(boletaJson, CrearBoletaRequest.class);
+        BoletaDTO creada = boletaService.crearBoletaConComprobante(usuarioId, request, comprobante);
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/boletas/{id}")
+                .buildAndExpand(creada.getId()).toUri();
+        return ResponseEntity.created(location).body(creada);
+    }
+
+    @Operation(summary = "Crear boleta sin comprobante", description = "CLIENTE crea boleta sin archivo adjunto")
+    @PostMapping(value = "/usuario/{usuarioId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BoletaDTO> crear(
             @PathVariable long usuarioId,
-            @Valid @RequestBody CrearBoletaRequest request,
+            @RequestBody CrearBoletaRequest request,
             Authentication authentication) {
         UsuarioPrincipal principal = (UsuarioPrincipal) authentication.getPrincipal();
 
