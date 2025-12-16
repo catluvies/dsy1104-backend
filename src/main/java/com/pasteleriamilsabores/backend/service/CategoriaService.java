@@ -41,7 +41,7 @@ public class CategoriaService {
         categoria.setNombre(categoriaDTO.getNombre());
         categoria.setDescripcion(categoriaDTO.getDescripcion());
         categoria.setImagenUrl(categoriaDTO.getImagenUrl());
-        categoria.setActiva(true);
+        categoria.setActiva(categoriaDTO.getActiva() != null ? categoriaDTO.getActiva() : true);
 
         Categoria guardada = categoriaRepository.save(categoria);
         return convertirADTO(guardada);
