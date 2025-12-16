@@ -2,12 +2,15 @@ package com.pasteleriamilsabores.backend.controller;
 
 import com.pasteleriamilsabores.backend.dto.CategoriaDTO;
 import com.pasteleriamilsabores.backend.service.CategoriaService;
+import com.pasteleriamilsabores.backend.service.FileStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -22,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class CategoriaController {
 
     private final CategoriaService categoriaService;
+    private final FileStorageService fileStorageService;
 
     @Operation(summary = "Listar todas las categorías")
     @GetMapping
@@ -41,18 +45,37 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaService.buscarPorId(id));
     }
 
-    @Operation(summary = "Crear categoría", description = "Solo ADMIN")
-    @PostMapping
-    public ResponseEntity<CategoriaDTO> crear(@Valid @RequestBody CategoriaDTO categoriaDTO) {
+    @Operation(summary = "Crear categoría", description = "Solo ADMIN. Permite subir imagen")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CategoriaDTO> crear(
+            @Valid @RequestPart("categoria") CategoriaDTO categoriaDTO,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+
+        if (imagen != null && !imagen.isEmpty()) {
+            String fileName = fileStorageService.storeFile(imagen);
+            String fileUrl = "/uploads/" + fileName;
+            categoriaDTO.setImagenUrl(fileUrl);
+        }
+
         CategoriaDTO creada = categoriaService.crearCategoria(categoriaDTO);
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
+        URI location = ServletUriComponentsBuilder.fromCurrentContextPath().path("/api/v1/categorias/{id}")
                 .buildAndExpand(creada.getId()).toUri();
         return ResponseEntity.created(location).body(creada);
     }
 
-    @Operation(summary = "Actualizar categoría", description = "Solo ADMIN")
-    @PutMapping("/{id}")
-    public ResponseEntity<CategoriaDTO> actualizar(@PathVariable long id, @Valid @RequestBody CategoriaDTO categoriaDTO) {
+    @Operation(summary = "Actualizar categoría", description = "Solo ADMIN. Permite cambiar imagen")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<CategoriaDTO> actualizar(
+            @PathVariable long id,
+            @Valid @RequestPart("categoria") CategoriaDTO categoriaDTO,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+
+        if (imagen != null && !imagen.isEmpty()) {
+            String fileName = fileStorageService.storeFile(imagen);
+            String fileUrl = "/uploads/" + fileName;
+            categoriaDTO.setImagenUrl(fileUrl);
+        }
+
         CategoriaDTO actualizada = categoriaService.actualizarCategoria(id, categoriaDTO);
         return ResponseEntity.ok(actualizada);
     }

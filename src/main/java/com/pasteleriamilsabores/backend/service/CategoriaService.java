@@ -53,7 +53,10 @@ public class CategoriaService {
 
         categoria.setNombre(categoriaDTO.getNombre());
         categoria.setDescripcion(categoriaDTO.getDescripcion());
-        categoria.setImagenUrl(categoriaDTO.getImagenUrl());
+        // Solo actualizar imagen si se envía una nueva (preservar existente si es null)
+        if (categoriaDTO.getImagenUrl() != null) {
+            categoria.setImagenUrl(categoriaDTO.getImagenUrl());
+        }
         categoria.setActiva(categoriaDTO.getActiva());
 
         Categoria actualizada = categoriaRepository.save(categoria);
