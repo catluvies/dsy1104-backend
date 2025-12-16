@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Tag(name = "Variantes de Producto", description = "Gestión de tamaños/variantes de productos")
+@Tag(name = "Variantes", description = "Gestión de tamaños/variantes de productos")
 public class ProductoVarianteController {
 
     private final ProductoVarianteService varianteService;
