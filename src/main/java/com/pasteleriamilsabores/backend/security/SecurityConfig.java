@@ -57,28 +57,33 @@ public class SecurityConfig {
                                                 .permitAll()
                                                 .requestMatchers("/uploads/**").permitAll()
 
-                                                // Categorías y Productos: GET público
+                                                // Categorías, Productos y Variantes: GET público
                                                 .requestMatchers(org.springframework.http.HttpMethod.GET,
                                                                 "/api/v1/categorias/**",
-                                                                "/api/v1/productos/**")
+                                                                "/api/v1/productos/**",
+                                                                "/api/v1/variantes/**")
                                                 .permitAll()
 
-                                                // Categorías y Productos: Modificaciones solo ADMIN
+                                                // Categorías, Productos y Variantes: Modificaciones solo ADMIN
                                                 .requestMatchers(org.springframework.http.HttpMethod.POST,
                                                                 "/api/v1/categorias/**",
-                                                                "/api/v1/productos/**")
+                                                                "/api/v1/productos/**",
+                                                                "/api/v1/variantes/**")
                                                 .hasRole("ADMIN")
                                                 .requestMatchers(org.springframework.http.HttpMethod.PUT,
                                                                 "/api/v1/categorias/**",
-                                                                "/api/v1/productos/**")
+                                                                "/api/v1/productos/**",
+                                                                "/api/v1/variantes/**")
                                                 .hasRole("ADMIN")
                                                 .requestMatchers(org.springframework.http.HttpMethod.PATCH,
                                                                 "/api/v1/categorias/**",
-                                                                "/api/v1/productos/**")
+                                                                "/api/v1/productos/**",
+                                                                "/api/v1/variantes/**")
                                                 .hasRole("ADMIN")
                                                 .requestMatchers(org.springframework.http.HttpMethod.DELETE,
                                                                 "/api/v1/categorias/**",
-                                                                "/api/v1/productos/**")
+                                                                "/api/v1/productos/**",
+                                                                "/api/v1/variantes/**")
                                                 .hasRole("ADMIN")
 
                                                 // Boletas:

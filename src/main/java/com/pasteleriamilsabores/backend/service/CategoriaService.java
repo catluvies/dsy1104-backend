@@ -40,6 +40,7 @@ public class CategoriaService {
         Categoria categoria = new Categoria();
         categoria.setNombre(categoriaDTO.getNombre());
         categoria.setDescripcion(categoriaDTO.getDescripcion());
+        categoria.setImagenUrl(categoriaDTO.getImagenUrl());
         categoria.setActiva(true);
 
         Categoria guardada = categoriaRepository.save(categoria);
@@ -52,6 +53,7 @@ public class CategoriaService {
 
         categoria.setNombre(categoriaDTO.getNombre());
         categoria.setDescripcion(categoriaDTO.getDescripcion());
+        categoria.setImagenUrl(categoriaDTO.getImagenUrl());
         categoria.setActiva(categoriaDTO.getActiva());
 
         Categoria actualizada = categoriaRepository.save(categoria);
@@ -66,10 +68,12 @@ public class CategoriaService {
     }
 
     private CategoriaDTO convertirADTO(Categoria categoria) {
-        return new CategoriaDTO(
-                categoria.getId(),
-                categoria.getNombre(),
-                categoria.getDescripcion(),
-                categoria.getActiva());
+        CategoriaDTO dto = new CategoriaDTO();
+        dto.setId(categoria.getId());
+        dto.setNombre(categoria.getNombre());
+        dto.setDescripcion(categoria.getDescripcion());
+        dto.setImagenUrl(categoria.getImagenUrl());
+        dto.setActiva(categoria.getActiva());
+        return dto;
     }
 }

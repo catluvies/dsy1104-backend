@@ -77,4 +77,10 @@ public class Producto {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<DetalleBoleta> detallesBoleta;
+
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<ProductoVariante> variantes;
 }

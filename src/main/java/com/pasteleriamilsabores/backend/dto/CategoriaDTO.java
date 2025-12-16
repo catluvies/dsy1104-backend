@@ -24,6 +24,10 @@ public class CategoriaDTO {
     @Schema(description = "Descripción de la categoría", example = "Tortas para celebraciones")
     private String descripcion;
 
+    @Size(max = 255, message = "La URL de imagen no puede exceder 255 caracteres")
+    @Schema(description = "URL de la imagen de la categoría", example = "https://ejemplo.com/imagen.jpg")
+    private String imagenUrl;
+
     @Schema(description = "Categoría activa o inactiva", example = "true")
     private Boolean activa;
 

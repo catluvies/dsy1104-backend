@@ -25,6 +25,9 @@ public class Categoria {
     @Column(length = 500)
     private String descripcion;
 
+    @Column(length = 255)
+    private String imagenUrl;
+
     @Column(nullable = false)
     private Boolean activa;
 
